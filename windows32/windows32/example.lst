@@ -1,0 +1,210 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/21/20 01:48:24
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program -- adds 158 to number in memory
+				; Author:  MingkuanPang
+				; Date:    10/8/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA                   ; reserve storage for data
+ 00000000 00000000		x     DWORD ?
+ 00000004 00000000		y     DWORD ?
+ 00000008 00000000		z     DWORD ?
+ 0000000C 00000000		minimum     DWORD ?
+ 00000010 00000000		maximum     DWORD ?
+ 00000014 00000019		nbrArray    DWORD 25,47,95,50,16,95 DUP(?)
+	   0000002F
+	   0000005F
+	   00000032
+	   00000010
+	   0000005F [
+	    00000000
+	   ]
+
+ 000001A4 50 6C 65 61 73	prompt1 BYTE    "Please enter the first number",0
+	   65 20 65 6E 74
+	   65 72 20 74 68
+	   65 20 66 69 72
+	   73 74 20 6E 75
+	   6D 62 65 72 00
+ 000001C2 50 6C 65 61 73	prompt2 BYTE    "Please enter the second number",0
+	   65 20 65 6E 74
+	   65 72 20 74 68
+	   65 20 73 65 63
+	   6F 6E 64 20 6E
+	   75 6D 62 65 72
+	   00
+ 000001E1 50 6C 65 61 73	prompt3 BYTE    "Please enter the third number",0
+	   65 20 65 6E 74
+	   65 72 20 74 68
+	   65 20 74 68 69
+	   72 64 20 6E 75
+	   6D 62 65 72 00
+ 000001FF 54 68 65 20 6D	prompt4	BYTE	"The maximum number is",0
+	   61 78 69 6D 75
+	   6D 20 6E 75 6D
+	   62 65 72 20 69
+	   73 00
+ 00000215 54 68 65 20 6D	prompt5 BYTE	"The minimum number is",0
+	   69 6E 69 6D 75
+	   6D 20 6E 75 6D
+	   62 65 72 20 69
+	   73 00
+ 0000022B  0000001E [		string     BYTE    30 DUP (?)
+	    00
+	   ]
+ 00000249 54 68 65 20 72	answer  BYTE    "The result is:",0
+	   65 73 75 6C 74
+	   20 69 73 3A 00
+ 00000258  0000000B [		result    BYTE    11 DUP (?),   0 
+	    00
+	   ] 00
+ 00000264  0000000B [		max_num		BYTE	11 DUP (?),		0
+	    00
+	   ] 00
+ 00000270  0000000B [		min_num		BYTE	11 DUP (?),		0
+	    00
+	   ] 00
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+ 00000000  8D 05 00000010 R		lea		eax,maximum
+ 00000006  50				push	eax
+ 00000007  8D 05 0000000C R		lea		eax,minimum
+ 0000000D  50				push	eax
+ 0000000E  6A 05			pushd	5
+ 00000010  8D 05 00000014 R		lea		eax,nbrArray
+ 00000016  50				push	eax
+ 00000017  E8 00000073			call	fctn1
+ 0000001C  83 C4 10			add		esp,16
+					dtoa	max_num,maximum
+					dtoa	min_num,minimum
+					output	prompt4,max_num
+					output	prompt5,min_num
+ 00000089  B8 00000000			mov		eax,0
+ 0000008E  C3				ret
+ 0000008F			_MainProc    ENDP
+				;void minMax(int arr[], int count, int& min, int& max);
+				;Set min to smallest value in arr[0],......., arr[count-1]
+				;Set max to largest value in arr[0],.......,arr[count-1]
+ 0000008F			fctn1   PROC
+ 0000008F  55				push	ebp
+ 00000090  8B EC			mov		ebp,esp
+ 00000092  56				push	esi
+ 00000093  53				push	ebx
+ 00000094  51				push	ecx
+ 00000095  52				push	edx
+ 00000096  50				push	eax
+ 00000097  8B 75 08			mov		esi,[ebp+8]
+ 0000009A  8B 4D 0C			mov		ecx,[ebp+12] ;set edx to count
+ 0000009D  8B 5D 10			mov		ebx,[ebp+16] ;set ebx to minimum
+ 000000A0  8B 55 14			mov		edx,[ebp+20] ;set ecx to maximum
+ 000000A3  C7 03 7FFFFFFF		mov		DWORD PTR [ebx],7FFFFFFFh
+ 000000A9  C7 02 80000000		mov		DWORD PTR [edx],80000000h
+ 000000AF			forloop:
+ 000000AF  8B 06			mov		eax,[esi]
+ 000000B1  3B 03			cmp		eax,[ebx]
+ 000000B3  7D 00			jnl		endifmin
+					mov		[ebx],[esi]
+example.asm(67) : error A2070:invalid instruction operands
+ 000000B5			endifmin:
+ 000000B5  3B 02			cmp		eax,[edx]
+ 000000B7  7E 02			jng		endforloop
+ 000000B9  89 02			mov		[edx],eax
+ 000000BB			endforloop:
+ 000000BB  83 C6 04			add		esi,4
+ 000000BE  E2 EF			loop	forloop
+ 000000C0  58				pop		eax
+ 000000C1  5A				pop		edx
+ 000000C2  59				pop		ecx
+ 000000C3  5B				pop		ebx
+ 000000C4  5E				pop		esi
+ 000000C5  5D				pop		ebp
+ 000000C6  C3				ret
+ 000000C7			fctn1   ENDP
+				END                           
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/21/20 01:48:24
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000027C Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000C7 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000008F Public
+fctn1  . . . . . . . . . . . . .	P Near	 0000008F _TEXT	Length= 00000038 Public
+  forloop  . . . . . . . . . . .	L Near	 000000AF _TEXT	
+  endifmin . . . . . . . . . . .	L Near	 000000B5 _TEXT	
+  endforloop . . . . . . . . . .	L Near	 000000BB _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+answer . . . . . . . . . . . . .	Byte	 00000249 _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+max_num  . . . . . . . . . . . .	Byte	 00000264 _DATA	
+maximum  . . . . . . . . . . . .	DWord	 00000010 _DATA	
+min_num  . . . . . . . . . . . .	Byte	 00000270 _DATA	
+minimum  . . . . . . . . . . . .	DWord	 0000000C _DATA	
+nbrArray . . . . . . . . . . . .	DWord	 00000014 _DATA	
+prompt1  . . . . . . . . . . . .	Byte	 000001A4 _DATA	
+prompt2  . . . . . . . . . . . .	Byte	 000001C2 _DATA	
+prompt3  . . . . . . . . . . . .	Byte	 000001E1 _DATA	
+prompt4  . . . . . . . . . . . .	Byte	 000001FF _DATA	
+prompt5  . . . . . . . . . . . .	Byte	 00000215 _DATA	
+result . . . . . . . . . . . . .	Byte	 00000258 _DATA	
+string . . . . . . . . . . . . .	Byte	 0000022B _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+x  . . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+y  . . . . . . . . . . . . . . .	DWord	 00000004 _DATA	
+z  . . . . . . . . . . . . . . .	DWord	 00000008 _DATA	
+
+	   0 Warnings
+	   1 Errors
