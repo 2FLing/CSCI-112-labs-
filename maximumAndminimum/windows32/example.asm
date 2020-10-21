@@ -1,6 +1,6 @@
 ; Example assembly language program -- adds 158 to number in memory
 ; Author:  MingkuanPang
-; Date:    10/8/2020    
+; Date:    10/21/2020    
 
 .586
 .MODEL FLAT
@@ -55,9 +55,9 @@ fctn1   PROC
 	push	edx
 	push	eax
 	mov		esi,[ebp+8]
-	mov		ecx,[ebp+12] ;set edx to count
+	mov		ecx,[ebp+12] ;set ecx to count
 	mov		ebx,[ebp+16] ;set ebx to minimum
-	mov		edx,[ebp+20] ;set ecx to maximum
+	mov		edx,[ebp+20] ;set edx to maximum
 	mov		DWORD PTR [ebx],7FFFFFFFh
 	mov		DWORD PTR [edx],80000000h
 forloop:
