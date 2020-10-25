@@ -6,9 +6,8 @@
 .CODE                           ; start of main program code
 main    PROC
    CodeBegin:
-       mov      rbx,-1
-       mov      r14,1
-       add      rbx,r14
+       mov rdx, R9
+       mov rax, rsp
        ret
 main ENDP
 END                             ; end of source code

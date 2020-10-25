@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/21/20 01:48:24
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/24/20 17:00:13
 example.asm						     Page 1 - 1
 
 
@@ -112,26 +112,25 @@ example.asm						     Page 1 - 1
  000000AF			forloop:
  000000AF  8B 06			mov		eax,[esi]
  000000B1  3B 03			cmp		eax,[ebx]
- 000000B3  7D 00			jnl		endifmin
-					mov		[ebx],[esi]
-example.asm(67) : error A2070:invalid instruction operands
- 000000B5			endifmin:
- 000000B5  3B 02			cmp		eax,[edx]
- 000000B7  7E 02			jng		endforloop
- 000000B9  89 02			mov		[edx],eax
- 000000BB			endforloop:
- 000000BB  83 C6 04			add		esi,4
- 000000BE  E2 EF			loop	forloop
- 000000C0  58				pop		eax
- 000000C1  5A				pop		edx
- 000000C2  59				pop		ecx
- 000000C3  5B				pop		ebx
- 000000C4  5E				pop		esi
- 000000C5  5D				pop		ebp
- 000000C6  C3				ret
- 000000C7			fctn1   ENDP
+ 000000B3  7D 02			jnl		endifmin
+ 000000B5  89 03			mov		[ebx],eax
+ 000000B7			endifmin:
+ 000000B7  3B 02			cmp		eax,[edx]
+ 000000B9  7E 02			jng		endforloop
+ 000000BB  89 02			mov		[edx],eax
+ 000000BD			endforloop:
+ 000000BD  83 C6 04			add		esi,4
+ 000000C0  E2 ED			loop	forloop
+ 000000C2  58				pop		eax
+ 000000C3  5A				pop		edx
+ 000000C4  59				pop		ecx
+ 000000C5  5B				pop		ebx
+ 000000C6  5E				pop		esi
+ 000000C7  5D				pop		ebp
+ 000000C8  C3				ret
+ 000000C9			fctn1   ENDP
 				END                           
-Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/21/20 01:48:24
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/24/20 17:00:13
 example.asm						     Symbols 2 - 1
 
 
@@ -156,7 +155,7 @@ Segments and Groups:
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
 _DATA  . . . . . . . . . . . . .	32 Bit	 0000027C Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000000C7 Para	  Public  'CODE'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000C9 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
@@ -164,10 +163,10 @@ Procedures, parameters, and locals:
                 N a m e                 Type     Value    Attr
 
 _MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000008F Public
-fctn1  . . . . . . . . . . . . .	P Near	 0000008F _TEXT	Length= 00000038 Public
+fctn1  . . . . . . . . . . . . .	P Near	 0000008F _TEXT	Length= 0000003A Public
   forloop  . . . . . . . . . . .	L Near	 000000AF _TEXT	
-  endifmin . . . . . . . . . . .	L Near	 000000B5 _TEXT	
-  endforloop . . . . . . . . . .	L Near	 000000BB _TEXT	
+  endifmin . . . . . . . . . . .	L Near	 000000B7 _TEXT	
+  endforloop . . . . . . . . . .	L Near	 000000BD _TEXT	
 
 
 Symbols:
@@ -207,4 +206,4 @@ y  . . . . . . . . . . . . . . .	DWord	 00000004 _DATA
 z  . . . . . . . . . . . . . . .	DWord	 00000008 _DATA	
 
 	   0 Warnings
-	   1 Errors
+	   0 Errors

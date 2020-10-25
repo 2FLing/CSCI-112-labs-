@@ -1,0 +1,168 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/24/20 18:11:41
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program -- adds 158 to number in memory
+				; Author:  MingkuanPang
+				; Date:    10/24/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA                   ; reserve storage for data
+ 00000000 00000000		len		DWORD	?
+ 00000004  0000005F [		nbrArray    DWORD	95 DUP(?)
+	    00000000
+	   ]
+ 00000180  0000001E [		string	BYTE	30 DUP(?)
+	    00
+	   ]
+ 0000019E  0000000B [		answer	BYTE	11	DUP(?),0
+	    00
+	   ] 00
+ 000001AA 74 68 65 20 61	result		BYTE	"the average is ",0
+	   76 65 72 61 67
+	   65 20 69 73 20
+	   00
+ 000001BA 50 6C 65 61 73	prompt1		BYTE	"Please enter a number",0			
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   6E 75 6D 62 65
+	   72 00
+ 000001D0 48 6F 77 20 6D	prompt2		BYTE	"How many number you want to input?",0
+	   61 6E 79 20 6E
+	   75 6D 62 65 72
+	   20 79 6F 75 20
+	   77 61 6E 74 20
+	   74 6F 20 69 6E
+	   70 75 74 3F 00
+
+				Average	MACRO	array,len
+					pushd	len
+					lea		eax,nbrArray
+					push	eax
+					call	AverageProc
+					add		esp,8
+					ENDM
+
+ 00000000			.CODE       
+
+ 00000000			_MainProc    PROC
+					input	prompt2,string,30
+					atod	string
+ 0000002D  A3 00000000 R		mov		len,eax
+
+ 00000032  8B C8			mov		ecx,eax
+ 00000034  8D 1D 00000004 R		lea		ebx,nbrArray
+ 0000003A			forloop:
+					input	prompt1,string,30
+					atod	string
+ 00000067  89 03			mov		[ebx],eax
+ 00000069  83 C3 04			add		ebx,4
+ 0000006C  E2 CC			loop	forloop
+
+					Average	nbrArray,len
+					dtoa	answer,eax
+					output	result,answer
+ 000000B4  B8 00000000			mov		eax,0
+ 000000B9  C3				ret
+ 000000BA			_MainProc    ENDP
+
+				;input(Array,number)
+ 000000BA			AverageProc	PROC
+ 000000BA  55				push	ebp
+ 000000BB  8B EC			mov		ebp,esp
+ 000000BD  56				push	esi
+ 000000BE  51				push	ecx
+ 000000BF  53				push	ebx
+ 000000C0  8B 75 08			mov		esi,[ebp+8]
+ 000000C3  8B 4D 0C			mov		ecx,[ebp+12]
+ 000000C6  8B D9			mov		ebx,ecx
+ 000000C8  B8 00000000			mov		eax,0
+ 000000CD			forloop:
+ 000000CD  03 06			add		eax,[esi]
+ 000000CF  83 C6 04			add		esi,4
+ 000000D2  E2 F9			loop	forloop
+ 000000D4  99				cdq		
+ 000000D5  F7 FB			idiv	ebx
+ 000000D7  5B				pop		ebx
+ 000000D8  59				pop		ecx
+ 000000D9  5E				pop		esi
+ 000000DA  5D				pop		ebp
+ 000000DB  C3				ret
+ 000000DC			AverageProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/24/20 18:11:41
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+Average  . . . . . . . . . . . .	Proc
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 000001F3 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000DC Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+AverageProc  . . . . . . . . . .	P Near	 000000BA _TEXT	Length= 00000022 Public
+  forloop  . . . . . . . . . . .	L Near	 000000CD _TEXT	
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000000BA Public
+  forloop  . . . . . . . . . . .	L Near	 0000003A _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+answer . . . . . . . . . . . . .	Byte	 0000019E _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+len  . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+nbrArray . . . . . . . . . . . .	DWord	 00000004 _DATA	
+prompt1  . . . . . . . . . . . .	Byte	 000001BA _DATA	
+prompt2  . . . . . . . . . . . .	Byte	 000001D0 _DATA	
+result . . . . . . . . . . . . .	Byte	 000001AA _DATA	
+string . . . . . . . . . . . . .	Byte	 00000180 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

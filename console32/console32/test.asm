@@ -4,14 +4,13 @@
 .STACK  4096            ; reserve 4096-byte stack
 
 .DATA                   ; reserve storage for data
-number  DWORD   -105
-sum     DWORD   ?
+number  DWORD   12
+sum     DWORD   3
 
 .CODE                           ; start of main program code
 main    PROC
-        mov     eax,100
-        imul    eax
-        mov     eax,0
+        mov     eax,2
+        imul    3
         ret
 main    ENDP
 

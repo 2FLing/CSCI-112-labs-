@@ -1,0 +1,171 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/22/20 16:24:06
+example.asm						     Page 1 - 1
+
+
+				; Name: MyFactorialProc
+				; Author:  MingkuanPang
+				; Date:    10/22/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA                   ; reserve storage for data
+ 00000000 00000000		number	DWORD	?
+ 00000004 50 6C 65 61 73	prompt1 BYTE    "Please enter a number",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   6E 75 6D 62 65
+	   72 00
+ 0000001A  0000001E [		string     BYTE    30 DUP (?)
+	    00
+	   ]
+ 00000038 54 68 65 20 72	answer  BYTE    "The result is:",0
+	   65 73 75 6C 74
+	   20 69 73 3A 00
+ 00000047  0000000B [		result    BYTE    11 DUP (?),   0 
+	    00
+	   ] 00
+
+				;Macro for fctn1(factorial with no recursive)
+				factorial1  MACRO	number
+							push	number
+							call	fctn1
+							add		esp,4
+							ENDM
+
+				;Macro for fctn2(factorial with recursive)
+				factorial2	MACRO	number
+							push	number
+							mov		eax,1
+							call	fctn2
+							add		esp,4
+							ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					input	prompt1,string, 30
+					atod	string
+ 0000002D  A3 00000000 R		mov		number,eax
+
+					;factorial1	number	;call facorial with no recursive
+					factorial2 number	;call factorial with recursive
+
+					dtoa	result,eax
+					output	answer,result
+ 00000076  B8 00000000			mov		eax,0
+ 0000007B  C3				ret
+ 0000007C			_MainProc    ENDP
+
+
+
+				;Name:MyFactorialProc
+				;Parameter:DWORD size number
+				;Returns:Factorial of the number(in EAX)
+ 0000007C			fctn1   PROC
+ 0000007C  55				push	ebp
+ 0000007D  8B EC			mov		ebp,esp
+ 0000007F  51				push	ecx
+ 00000080  B8 00000001			mov		eax,1
+ 00000085  8B 4D 08			mov		ecx,[ebp+8]
+ 00000088			forloop1:
+ 00000088  F7 E9			imul	ecx
+ 0000008A  E2 FC			loop	forloop1
+ 0000008C  59				pop		ecx
+ 0000008D  5D				pop		ebp
+ 0000008E  C3				ret
+ 0000008F			fctn1   ENDP
+
+				;Name:MyFactorialProc(with recursive)
+				;Parameter:DWORD size number
+				;Returns:Factorial of the number(in EAX)
+ 0000008F			fctn2   PROC
+ 0000008F  55				push	ebp
+ 00000090  8B EC			mov		ebp,esp
+ 00000092  53				push	ebx
+ 00000093  8B 5D 08			mov		ebx,[ebp+8]
+ 00000096  83 FB 01			cmp		ebx,1
+ 00000099  74 0C			je		quitrecursive	;end the recursive if the number is 1
+ 0000009B  F7 EB			imul	ebx
+ 0000009D  4B				dec		ebx
+ 0000009E  53				push	ebx
+ 0000009F  E8 FFFFFFEB			call	fctn2
+ 000000A4  83 C4 04			add		esp,4
+ 000000A7			quitrecursive:
+ 000000A7  5B				pop		ebx
+ 000000A8  5D				pop		ebp
+ 000000A9  C3				ret
+ 000000AA			fctn2   ENDP
+				END                           
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/22/20 16:24:06
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+factorial1 . . . . . . . . . . .	Proc
+factorial2 . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000053 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000AA Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000007C Public
+fctn1  . . . . . . . . . . . . .	P Near	 0000007C _TEXT	Length= 00000013 Public
+  forloop1 . . . . . . . . . . .	L Near	 00000088 _TEXT	
+fctn2  . . . . . . . . . . . . .	P Near	 0000008F _TEXT	Length= 0000001B Public
+  quitrecursive  . . . . . . . .	L Near	 000000A7 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+answer . . . . . . . . . . . . .	Byte	 00000038 _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+number . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+prompt1  . . . . . . . . . . . .	Byte	 00000004 _DATA	
+result . . . . . . . . . . . . .	Byte	 00000047 _DATA	
+string . . . . . . . . . . . . .	Byte	 0000001A _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

@@ -1,0 +1,124 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/24/20 17:15:14
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program -- adds 158 to number in memory
+				; Author:  MingkuanPang
+				; Date:    10/8/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA                   ; reserve storage for data
+ 00000000 00000005		len		DWORD	5
+ 00000004 61 62 63 64 65	bytArray    BYTE	'a','b','c','d','e',95 DUP(?)
+	   0000005F [
+	    00
+	   ]
+ 00000068 74 68 65 20 72	result	BYTE	"the result is ",0
+	   65 73 75 6C 74
+	   20 69 73 20 00
+
+				FuctnUpper	MACRO	val1,val2
+						lea		eax,val1
+						push	eax
+						pushd	val2
+						call	upper
+						add		esp,8
+						ENDM
+ 00000000			.CODE       
+
+ 00000000			_MainProc    PROC
+					FuctnUpper	bytArray,len
+					output	result,bytArray
+ 0000002E  B8 00000000			mov		eax,0
+ 00000033  C3				ret
+ 00000034			_MainProc    ENDP
+
+ 00000034			Upper	PROC
+ 00000034  55				push	ebp
+ 00000035  8B EC			mov		ebp,esp
+ 00000037  51				push	ecx
+ 00000038  8B 4C 24 0C			mov		ecx,[esp+12]
+ 0000003C			forloop:
+ 0000003C  80 38 60			cmp		BYTE PTR [eax],60h
+ 0000003F  7C 03			jl		endiflower
+ 00000041  80 28 20			sub		BYTE PTR [eax],20h
+ 00000044			endiflower:
+ 00000044  83 C0 01			add		eax,1
+ 00000047  E2 F3			loop	forloop
+ 00000049  59				pop		ecx
+ 0000004A  5D				pop		ebp
+ 0000004B  C3				ret
+ 0000004C			Upper	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/24/20 17:15:14
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+FuctnUpper . . . . . . . . . . .	Proc
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000077 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000004C Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+Upper  . . . . . . . . . . . . .	P Near	 00000034 _TEXT	Length= 00000018 Public
+  forloop  . . . . . . . . . . .	L Near	 0000003C _TEXT	
+  endiflower . . . . . . . . . .	L Near	 00000044 _TEXT	
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000034 Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+bytArray . . . . . . . . . . . .	Byte	 00000004 _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+len  . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+result . . . . . . . . . . . . .	Byte	 00000068 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

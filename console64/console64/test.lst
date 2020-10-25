@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/15/20 23:56:44
+Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/22/20 12:30:29
 test.asm						     Page 1 - 1
 
 
@@ -13,15 +13,12 @@ test.asm(3) : error A2008:syntax error : .
  00000000			.CODE                           ; start of main program code
  00000000			main    PROC
  00000000			   CodeBegin:
- 00000000  48/ C7 C3		       mov      rbx,-1
-	   FFFFFFFF
- 00000007  49/ C7 C6		       mov      r14,1
-	   00000001
- 0000000E  49/ 03 DE		       add      rbx,r14
- 00000011  C3			       ret
- 00000012			main ENDP
+ 00000000  49/ 8B D1		       mov rdx, R9
+ 00000003  48/ 8B C4		       mov rax, rsp
+ 00000006  C3			       ret
+ 00000007			main ENDP
 				END                             ; end of source code
-Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/15/20 23:56:44
+Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/22/20 12:30:29
 test.asm						     Symbols 2 - 1
 
 
@@ -31,7 +28,7 @@ Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-main . . . . . . . . . . . . . .	P 	 00000000 _TEXT	Length= 00000012 Public
+main . . . . . . . . . . . . . .	P 	 00000000 _TEXT	Length= 00000007 Public
   CodeBegin  . . . . . . . . . .	L 	 00000000 _TEXT	
 
 
