@@ -1,4 +1,4 @@
-Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 00:11:33
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 20:40:09
 example.asm						     Page 1 - 1
 
 
@@ -15,63 +15,29 @@ example.asm						     Page 1 - 1
 			      C 
 				.STACK  4096            ; reserve 4096-byte stack
 
- 00000000			.DATA                   ; reserve storage for data
- 00000000 00000000		times		DWORD	0
- 00000004  0000005F [		nbrArray    DWORD	95 DUP(?)
-	    00000000
-	   ]
- 00000180  0000001E [		string	BYTE	30 DUP(?)
-	    00
-	   ]
- 0000019E  0000000B [		avg_str	BYTE	11	DUP(?),0
-	    00
-	   ] 00
- 000001AA  0000000B [		sum_str	BYTE	11	DUP(?),0
-	    00
-	   ] 00
- 000001B6 74 68 65 20 61	avg		BYTE	"the average is ",0
-	   76 65 72 61 67
-	   65 20 69 73 20
-	   00
- 000001C6 54 68 65 20 73	sum		BYTE	"The sum is ",0
-	   75 6D 20 69 73
-	   20 00
- 000001D2 50 6C 65 61 73	prompt1		BYTE	"Please enter a number (enter 'q' to stop)",0			
-	   65 20 65 6E 74
-	   65 72 20 61 20
-	   6E 75 6D 62 65
-	   72 20 28 65 6E
-	   74 65 72 20 27
-	   71 27 20 74 6F
-	   20 73 74 6F 70
-	   29 00
+ 00000000			.DATA	; reserve storage for data
+ 00000000 00000000		number	DWORD	?
+ 00000004 00000002		value	DWORD	2
 
  00000000			.CODE       
+ 00000000			_MainProc    PROC	
+ 00000000  B8 7FFFFFFF			mov		eax,2147483647
+ 00000005  83 C0 64			add		eax,100
+ 00000008  C3				ret
+ 00000009			_MainProc    ENDP
 
- 00000000			_MainProc    PROC
- 00000000  BB 00000000			mov		ebx,0
- 00000005			whileloop:
-					input	prompt1,string,30
- 00000023  80 3D 00000180 R		cmp		string,'q'
-	   71
- 0000002A  0F 84 00000087		je		endloop
-					atod	string
- 0000003F  03 D8			add		ebx,eax
- 00000041  FF 05 00000000 R		inc		times
- 00000047  8B C3			mov		eax,ebx
- 00000049  99				cdq
- 0000004A  F7 3D 00000000 R		idiv	times
-					dtoa	avg_str,eax
-					dtoa	sum_str,ebx
-					output	avg,avg_str
-					output	sum,sum_str
- 000000B2  E9 FFFFFF4E			jmp		whileloop
- 000000B7			endloop:
- 000000B7  B8 00000000			mov		eax,0
- 000000BC  C3				ret
- 000000BD			_MainProc    ENDP
+ 00000009			changeProc	PROC
+ 00000009  55				push	ebp
+ 0000000A  8B EC			mov		ebp,esp
+ 0000000C  50				push	eax
+ 0000000D  8B 45 0C			mov		eax,[ebp+12]
+ 00000010  89 45 08			mov		[ebp+8],eax
+ 00000013  58				pop		eax
+ 00000014  5D				pop		ebp
+ 00000015  C3				ret
+ 00000016			changeProc	ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 00:11:33
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 20:40:09
 example.asm						     Symbols 2 - 1
 
 
@@ -95,17 +61,16 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 000001FC Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000000BD Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000008 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000016 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000000BD Public
-  whileloop  . . . . . . . . . .	L Near	 00000005 _TEXT	
-  endloop  . . . . . . . . . . .	L Near	 000000B7 _TEXT	
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000009 Public
+changeProc . . . . . . . . . . .	P Near	 00000009 _TEXT	Length= 0000000D Public
 
 
 Symbols:
@@ -125,15 +90,9 @@ _getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
 _showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
 atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-avg_str  . . . . . . . . . . . .	Byte	 0000019E _DATA	
-avg  . . . . . . . . . . . . . .	Byte	 000001B6 _DATA	
 dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-nbrArray . . . . . . . . . . . .	DWord	 00000004 _DATA	
-prompt1  . . . . . . . . . . . .	Byte	 000001D2 _DATA	
-string . . . . . . . . . . . . .	Byte	 00000180 _DATA	
-sum_str  . . . . . . . . . . . .	Byte	 000001AA _DATA	
-sum  . . . . . . . . . . . . . .	Byte	 000001C6 _DATA	
-times  . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+number . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+value  . . . . . . . . . . . . .	DWord	 00000004 _DATA	
 wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 
 	   0 Warnings

@@ -1,0 +1,166 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 14:59:27
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program -- adds 158 to number in memory
+				; Author:  MingkuanPang
+				; Date:    10/24/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+ 00000000  0000005A [		nbrArray	DWORD	90 DUP(?)
+	    00000000
+	   ]
+ 00000168 00000000		number		DWORD	?
+ 0000016C 50 6C 65 61 73	prompt1		BYTE	"Please enter a number(enter 'q' to quit)",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   6E 75 6D 62 65
+	   72 28 65 6E 74
+	   65 72 20 27 71
+	   27 20 74 6F 20
+	   71 75 69 74 29
+	   00
+ 00000195 54 68 69 73 20	prompt2		BYTE	"This is not in the array",0
+	   69 73 20 6E 6F
+	   74 20 69 6E 20
+	   74 68 65 20 61
+	   72 72 61 79 00
+ 000001AE  0000001E [		string		BYTE	30	DUP(?)
+	    00
+	   ]
+ 000001CC  0000000B [		answer		BYTE	11	DUP(?),0
+	    00
+	   ] 00
+ 000001D8 54 68 61 74 20	result		BYTE	"That is in the Array in the position of",0
+	   69 73 20 69 6E
+	   20 74 68 65 20
+	   41 72 72 61 79
+	   20 69 6E 20 74
+	   68 65 20 70 6F
+	   73 69 74 69 6F
+	   6E 20 6F 66 00
+ 00000000			.CODE       
+
+ 00000000			_MainProc    PROC	
+ 00000000  BE 00000000			mov		esi,0
+ 00000005			loop1:
+					input	prompt1,string,30
+ 00000023  80 3D 000001AE R		cmp		string,'q'
+	   71
+ 0000002A  74 19			je		endloop1
+					atod	string
+ 0000003B  89 04 B5			mov		nbrArray[esi*4],eax
+	   00000000 R
+ 00000042  46				inc		esi
+ 00000043  EB C0			jmp		loop1
+ 00000045			endloop1:
+ 00000045  83 FE 00			cmp		esi,0
+ 00000048  0F 84 000000C9		je		quitProc
+ 0000004E			loop2:
+					input	prompt1,string,30
+ 0000006C  80 3D 000001AE R		cmp		string,'q'
+	   71
+ 00000073  0F 84 0000009E		je		quitProc
+					atod	string
+ 00000088  A3 00000168 R		mov		number,eax
+ 0000008D  8B CE			mov		ecx,esi
+ 0000008F  BB 00000000			mov		ebx,0
+ 00000094			forloop:
+ 00000094  8B 04 9D			mov		eax,nbrArray[ebx*4]
+	   00000000 R
+ 0000009B  3B 05 00000168 R		cmp		eax,number
+ 000000A1  75 37			jne		next
+ 000000A3  43				inc		ebx
+					dtoa	answer,ebx
+					output	result,answer
+ 000000D5  E9 FFFFFF74			jmp		loop2
+ 000000DA			next:
+ 000000DA  43				inc		ebx
+ 000000DB  E2 B7			loop	forloop
+					dtoa	answer,number
+					output	prompt2,answer
+ 00000112  E9 FFFFFF37			jmp		loop2
+ 00000117			quitProc:
+ 00000117  B8 00000000			mov		eax,0
+ 0000011C  C3				ret
+ 0000011D			_MainProc    ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 14:59:27
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000200 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000011D Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000011D Public
+  loop1  . . . . . . . . . . . .	L Near	 00000005 _TEXT	
+  endloop1 . . . . . . . . . . .	L Near	 00000045 _TEXT	
+  loop2  . . . . . . . . . . . .	L Near	 0000004E _TEXT	
+  forloop  . . . . . . . . . . .	L Near	 00000094 _TEXT	
+  next . . . . . . . . . . . . .	L Near	 000000DA _TEXT	
+  quitProc . . . . . . . . . . .	L Near	 00000117 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+answer . . . . . . . . . . . . .	Byte	 000001CC _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+nbrArray . . . . . . . . . . . .	DWord	 00000000 _DATA	
+number . . . . . . . . . . . . .	DWord	 00000168 _DATA	
+prompt1  . . . . . . . . . . . .	Byte	 0000016C _DATA	
+prompt2  . . . . . . . . . . . .	Byte	 00000195 _DATA	
+result . . . . . . . . . . . . .	Byte	 000001D8 _DATA	
+string . . . . . . . . . . . . .	Byte	 000001AE _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

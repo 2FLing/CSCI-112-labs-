@@ -1,0 +1,351 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 11:52:23
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program -- adds 158 to number in memory
+				; Author:  MingkuanPang
+				; Date:    10/24/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA                   ; reserve storage for data
+ 00000000 00000000		addrStore	DWORD	?		
+ 00000000			.CODE       
+
+ 00000000			_MainProc    PROC	
+ 00000000			doAgain:
+ 00000000  B8 00000000			mov		eax,0
+ 00000005  B8 00000000			mov		eax,0
+ 0000000A  B8 00000000			mov		eax,0
+ 0000000F  EB EF			jmp		doAgain
+ 00000011  B8 00000000			mov		eax,0
+ 00000016  B8 00000000			mov		eax,0
+ 0000001B  B8 00000000			mov		eax,0
+ 00000020  B8 00000000			mov		eax,0
+ 00000025  B8 00000000			mov		eax,0
+ 0000002A  B8 00000000			mov		eax,0
+ 0000002F  B8 00000000			mov		eax,0
+ 00000034  B8 00000000			mov		eax,0
+ 00000039  B8 00000000			mov		eax,0
+ 0000003E  B8 00000000			mov		eax,0
+ 00000043  B8 00000000			mov		eax,0
+ 00000048  B8 00000000			mov		eax,0
+ 0000004D  B8 00000000			mov		eax,0
+ 00000052  B8 00000000			mov		eax,0
+ 00000057  B8 00000000			mov		eax,0
+ 0000005C  B8 00000000			mov		eax,0
+ 00000061  B8 00000000			mov		eax,0
+ 00000066  B8 00000000			mov		eax,0
+ 0000006B  B8 00000000			mov		eax,0
+ 00000070  B8 00000000			mov		eax,0
+ 00000075  B8 00000000			mov		eax,0
+ 0000007A  B8 00000000			mov		eax,0
+ 0000007F  B8 00000000			mov		eax,0
+ 00000084  B8 00000000			mov		eax,0
+ 00000089  B8 00000000			mov		eax,0
+ 0000008E  B8 00000000			mov		eax,0
+ 00000093  B8 00000000			mov		eax,0
+ 00000098  B8 00000000			mov		eax,0
+ 0000009D  B8 00000000			mov		eax,0
+ 000000A2  B8 00000000			mov		eax,0
+ 000000A7  B8 00000000			mov		eax,0
+ 000000AC  B8 00000000			mov		eax,0
+ 000000B1  B8 00000000			mov		eax,0
+ 000000B6  B8 00000000			mov		eax,0
+ 000000BB  B8 00000000			mov		eax,0
+ 000000C0  B8 00000000			mov		eax,0
+ 000000C5  B8 00000000			mov		eax,0
+ 000000CA  B8 00000000			mov		eax,0
+ 000000CF  B8 00000000			mov		eax,0
+ 000000D4  B8 00000000			mov		eax,0
+ 000000D9  B8 00000000			mov		eax,0
+ 000000DE  B8 00000000			mov		eax,0
+ 000000E3  B8 00000000			mov		eax,0
+ 000000E8  B8 00000000			mov		eax,0
+ 000000ED  B8 00000000			mov		eax,0
+ 000000F2  B8 00000000			mov		eax,0
+ 000000F7  B8 00000000			mov		eax,0
+ 000000FC  B8 00000000			mov		eax,0
+ 00000101  B8 00000000			mov		eax,0
+ 00000106  B8 00000000			mov		eax,0
+ 0000010B  B8 00000000			mov		eax,0
+ 00000110  B8 00000000			mov		eax,0
+ 00000115  B8 00000000			mov		eax,0
+ 0000011A  B8 00000000			mov		eax,0
+ 0000011F  B8 00000000			mov		eax,0
+ 00000124  B8 00000000			mov		eax,0
+ 00000129  B8 00000000			mov		eax,0
+ 0000012E  B8 00000000			mov		eax,0
+ 00000133  B8 00000000			mov		eax,0
+ 00000138  B8 00000000			mov		eax,0
+ 0000013D  B8 00000000			mov		eax,0
+ 00000142  B8 00000000			mov		eax,0
+ 00000147  B8 00000000			mov		eax,0
+ 0000014C  B8 00000000			mov		eax,0
+ 00000151  B8 00000000			mov		eax,0
+ 00000156  B8 00000000			mov		eax,0
+ 0000015B  B8 00000000			mov		eax,0
+ 00000160  B8 00000000			mov		eax,0
+ 00000165  B8 00000000			mov		eax,0
+ 0000016A  B8 00000000			mov		eax,0
+ 0000016F  B8 00000000			mov		eax,0
+ 00000174  B8 00000000			mov		eax,0
+ 00000179  B8 00000000			mov		eax,0
+ 0000017E  B8 00000000			mov		eax,0
+ 00000183  B8 00000000			mov		eax,0
+ 00000188  B8 00000000			mov		eax,0
+ 0000018D  B8 00000000			mov		eax,0
+ 00000192  B8 00000000			mov		eax,0
+ 00000197  B8 00000000			mov		eax,0
+ 0000019C  B8 00000000			mov		eax,0
+ 000001A1  B8 00000000			mov		eax,0
+ 000001A6  B8 00000000			mov		eax,0
+ 000001AB  B8 00000000			mov		eax,0
+ 000001B0  B8 00000000			mov		eax,0
+ 000001B5  B8 00000000			mov		eax,0
+ 000001BA  B8 00000000			mov		eax,0
+ 000001BF  B8 00000000			mov		eax,0
+ 000001C4  B8 00000000			mov		eax,0
+ 000001C9  B8 00000000			mov		eax,0
+ 000001CE  B8 00000000			mov		eax,0
+ 000001D3  B8 00000000			mov		eax,0
+ 000001D8  B8 00000000			mov		eax,0
+ 000001DD  B8 00000000			mov		eax,0
+ 000001E2  B8 00000000			mov		eax,0
+ 000001E7  B8 00000000			mov		eax,0
+ 000001EC  B8 00000000			mov		eax,0
+ 000001F1  B8 00000000			mov		eax,0
+ 000001F6  B8 00000000			mov		eax,0
+ 000001FB  B8 00000000			mov		eax,0
+ 00000200  B8 00000000			mov		eax,0
+ 00000205  B8 00000000			mov		eax,0
+ 0000020A  B8 00000000			mov		eax,0
+ 0000020F  B8 00000000			mov		eax,0
+ 00000214  B8 00000000			mov		eax,0
+ 00000219  B8 00000000			mov		eax,0
+ 0000021E  B8 00000000			mov		eax,0
+ 00000223  B8 00000000			mov		eax,0
+ 00000228  B8 00000000			mov		eax,0
+ 0000022D  B8 00000000			mov		eax,0
+ 00000232  B8 00000000			mov		eax,0
+ 00000237  B8 00000000			mov		eax,0
+ 0000023C  B8 00000000			mov		eax,0
+ 00000241  B8 00000000			mov		eax,0
+ 00000246  B8 00000000			mov		eax,0
+ 0000024B  B8 00000000			mov		eax,0
+ 00000250  B8 00000000			mov		eax,0
+ 00000255  B8 00000000			mov		eax,0
+ 0000025A  B8 00000000			mov		eax,0
+ 0000025F  B8 00000000			mov		eax,0
+ 00000264  B8 00000000			mov		eax,0
+ 00000269  B8 00000000			mov		eax,0
+ 0000026E  B8 00000000			mov		eax,0
+ 00000273  B8 00000000			mov		eax,0
+ 00000278  B8 00000000			mov		eax,0
+ 0000027D  B8 00000000			mov		eax,0
+ 00000282  B8 00000000			mov		eax,0
+ 00000287  B8 00000000			mov		eax,0
+ 0000028C  B8 00000000			mov		eax,0
+ 00000291  B8 00000000			mov		eax,0
+ 00000296  B8 00000000			mov		eax,0
+ 0000029B  B8 00000000			mov		eax,0
+ 000002A0  B8 00000000			mov		eax,0
+ 000002A5  B8 00000000			mov		eax,0
+ 000002AA  B8 00000000			mov		eax,0
+ 000002AF  B8 00000000			mov		eax,0
+ 000002B4  B8 00000000			mov		eax,0
+ 000002B9  B8 00000000			mov		eax,0
+ 000002BE  B8 00000000			mov		eax,0
+ 000002C3  B8 00000000			mov		eax,0
+ 000002C8  B8 00000000			mov		eax,0
+ 000002CD  B8 00000000			mov		eax,0
+ 000002D2  B8 00000000			mov		eax,0
+ 000002D7  B8 00000000			mov		eax,0
+ 000002DC  B8 00000000			mov		eax,0
+ 000002E1  B8 00000000			mov		eax,0
+ 000002E6  B8 00000000			mov		eax,0
+ 000002EB  B8 00000000			mov		eax,0
+ 000002F0  B8 00000000			mov		eax,0
+ 000002F5  B8 00000000			mov		eax,0
+ 000002FA  B8 00000000			mov		eax,0
+ 000002FF  B8 00000000			mov		eax,0
+ 00000304  B8 00000000			mov		eax,0
+ 00000309  B8 00000000			mov		eax,0
+ 0000030E  B8 00000000			mov		eax,0
+ 00000313  B8 00000000			mov		eax,0
+ 00000318  B8 00000000			mov		eax,0
+ 0000031D  B8 00000000			mov		eax,0
+ 00000322  B8 00000000			mov		eax,0
+ 00000327  B8 00000000			mov		eax,0
+ 0000032C  B8 00000000			mov		eax,0
+ 00000331  B8 00000000			mov		eax,0
+ 00000336  B8 00000000			mov		eax,0
+ 0000033B  B8 00000000			mov		eax,0
+ 00000340  B8 00000000			mov		eax,0
+ 00000345  B8 00000000			mov		eax,0
+ 0000034A  B8 00000000			mov		eax,0
+ 0000034F  B8 00000000			mov		eax,0
+ 00000354  B8 00000000			mov		eax,0
+ 00000359  B8 00000000			mov		eax,0
+ 0000035E  B8 00000000			mov		eax,0
+ 00000363  B8 00000000			mov		eax,0
+ 00000368  B8 00000000			mov		eax,0
+ 0000036D  B8 00000000			mov		eax,0
+ 00000372  B8 00000000			mov		eax,0
+ 00000377  B8 00000000			mov		eax,0
+ 0000037C  B8 00000000			mov		eax,0
+ 00000381  B8 00000000			mov		eax,0
+ 00000386  B8 00000000			mov		eax,0
+ 0000038B  B8 00000000			mov		eax,0
+ 00000390  B8 00000000			mov		eax,0
+ 00000395  B8 00000000			mov		eax,0
+ 0000039A  B8 00000000			mov		eax,0
+ 0000039F  B8 00000000			mov		eax,0
+ 000003A4  B8 00000000			mov		eax,0
+ 000003A9  B8 00000000			mov		eax,0
+ 000003AE  B8 00000000			mov		eax,0
+ 000003B3  B8 00000000			mov		eax,0
+ 000003B8  B8 00000000			mov		eax,0
+ 000003BD  B8 00000000			mov		eax,0
+ 000003C2  B8 00000000			mov		eax,0
+ 000003C7  B8 00000000			mov		eax,0
+ 000003CC  B8 00000000			mov		eax,0
+ 000003D1  B8 00000000			mov		eax,0
+ 000003D6  B8 00000000			mov		eax,0
+ 000003DB  B8 00000000			mov		eax,0
+ 000003E0  B8 00000000			mov		eax,0
+ 000003E5  B8 00000000			mov		eax,0
+ 000003EA  B8 00000000			mov		eax,0
+ 000003EF  B8 00000000			mov		eax,0
+ 000003F4  B8 00000000			mov		eax,0
+ 000003F9  E9 FFFFFC02			jmp		doAgain
+ 000003FE  B8 00000000			mov		eax,0
+ 00000403  B8 00000000			mov		eax,0
+ 00000408  B8 00000000			mov		eax,0
+ 0000040D  B8 00000000			mov		eax,0
+ 00000412  B8 00000000			mov		eax,0
+ 00000417  B8 00000000			mov		eax,0
+ 0000041C  B8 00000000			mov		eax,0
+ 00000421  B8 00000000			mov		eax,0
+ 00000426  B8 00000000			mov		eax,0
+ 0000042B  B8 00000000			mov		eax,0
+ 00000430  B8 00000000			mov		eax,0
+ 00000435  B8 00000000			mov		eax,0
+ 0000043A  B8 00000000			mov		eax,0
+ 0000043F  B8 00000000			mov		eax,0
+ 00000444  B8 00000000			mov		eax,0
+ 00000449  B8 00000000			mov		eax,0
+ 0000044E  B8 00000000			mov		eax,0
+ 00000453  B8 00000000			mov		eax,0
+ 00000458  B8 00000000			mov		eax,0
+ 0000045D  FF 25 00000000 R		jmp		addrStore
+ 00000463  B8 00000000			mov		eax,0
+ 00000468  B8 00000000			mov		eax,0
+ 0000046D  B8 00000000			mov		eax,0
+ 00000472  B8 00000000			mov		eax,0
+ 00000477  B8 00000000			mov		eax,0
+ 0000047C  B8 00000000			mov		eax,0
+ 00000481  B8 00000000			mov		eax,0
+ 00000486  B8 00000000			mov		eax,0
+ 0000048B  B8 00000000			mov		eax,0
+ 00000490  B8 00000000			mov		eax,0
+ 00000495  B8 00000000			mov		eax,0
+ 0000049A  B8 00000000			mov		eax,0
+ 0000049F  B8 00000000			mov		eax,0
+ 000004A4  B8 00000000			mov		eax,0
+ 000004A9  B8 00000000			mov		eax,0
+ 000004AE  B8 00000000			mov		eax,0
+ 000004B3  B8 00000000			mov		eax,0
+ 000004B8  B8 00000000			mov		eax,0
+ 000004BD  B8 00000000			mov		eax,0
+ 000004C2  FF E0			jmp		eax
+ 000004C4  B8 00000000			mov		eax,0
+ 000004C9  B8 00000000			mov		eax,0
+ 000004CE  B8 00000000			mov		eax,0
+ 000004D3  B8 00000000			mov		eax,0
+ 000004D8  B8 00000000			mov		eax,0
+ 000004DD  B8 00000000			mov		eax,0
+ 000004E2  B8 00000000			mov		eax,0
+ 000004E7  B8 00000000			mov		eax,0
+ 000004EC  B8 00000000			mov		eax,0
+ 000004F1  B8 00000000			mov		eax,0
+ 000004F6  B8 00000000			mov		eax,0
+ 000004FB  B8 00000000			mov		eax,0
+ 00000500  B8 00000000			mov		eax,0
+ 00000505  B8 00000000			mov		eax,0
+ 0000050A  B8 00000000			mov		eax,0
+ 0000050F  B8 00000000			mov		eax,0
+ 00000514  B8 00000000			mov		eax,0
+ 00000519  B8 00000000			mov		eax,0
+ 0000051E  B8 00000000			mov		eax,0
+ 00000523  FF 27			jmp		DWORD	PTR		[edi]
+ 00000525  B8 00000000			mov		eax,0
+ 0000052A  C3				ret
+ 0000052B			_MainProc    ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 11:52:23
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000004 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000052B Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000052B Public
+  doAgain  . . . . . . . . . . .	L Near	 00000000 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+addrStore  . . . . . . . . . . .	DWord	 00000000 _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

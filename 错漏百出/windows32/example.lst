@@ -1,0 +1,228 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 16:18:04
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program -- adds 158 to number in memory
+				; Author:  MingkuanPang
+				; Date:    10/24/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+ 00000000  0000005A [		nbrArray	DWORD	90 DUP(?)
+	    00000000
+	   ]
+ 00000168 00000000		nbrele		DWORD	?
+ 0000016C 00000000		number		DWORD	?
+ 00000170 50 6C 65 61 73	prompt1		BYTE	"Please enter a number(enter 'q' to quit)",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   6E 75 6D 62 65
+	   72 28 65 6E 74
+	   65 72 20 27 71
+	   27 20 74 6F 20
+	   71 75 69 74 29
+	   00
+ 00000199 54 68 69 73 20	prompt2		BYTE	"This is not in the array",0
+	   69 73 20 6E 6F
+	   74 20 69 6E 20
+	   74 68 65 20 61
+	   72 72 61 79 00
+ 000001B2  0000001E [		string		BYTE	30	DUP(?)
+	    00
+	   ]
+ 000001D0  0000000B [		answer		BYTE	11	DUP(?),0
+	    00
+	   ] 00
+ 000001DC 54 68 61 74 20	result		BYTE	"That is in the Array in the position of",0
+	   69 73 20 69 6E
+	   20 74 68 65 20
+	   41 72 72 61 79
+	   20 69 6E 20 74
+	   68 65 20 70 6F
+	   73 69 74 69 6F
+	   6E 20 6F 66 00
+
+				Insert	MACRO	val1
+					lea		eax,val1
+					push	eax
+					call	InsertProc
+					add		esp,4
+					ENDM
+
+				check	MACRO	val1,val2,val3
+					pushd	val3
+					pushd	val2
+					lea		eax,val1
+					push	eax
+					call	CheckProc
+					add		esp,16
+					ENDM
+ 00000000			.CODE       
+
+ 00000000			_MainProc    PROC	
+					Insert	nbrArray
+ 0000000F			whileloop:
+					input	prompt1,string,30
+ 0000002D  80 3D 000001B2 R		cmp		string,71h
+	   71
+ 00000034  0F 84 000000A4		je		quit
+					atod	string
+ 00000049  A3 0000016C R		mov		number,eax
+					check	nbrArray,number,nbrele
+ 00000069  83 F8 00			cmp		eax,0
+ 0000006C  74 36			je		notexist
+					dtoa	answer,eax
+					output	result,answer
+ 0000009F  E9 FFFFFF6B			jmp		whileloop
+ 000000A4			notexist:
+					dtoa	answer,number
+					output	prompt2,answer
+ 000000D9  E9 FFFFFF31			jmp		whileloop	
+ 000000DE			quit:
+ 000000DE  B8 00000000			mov		eax,0
+ 000000E3  C3				ret
+ 000000E4			_MainProc    ENDP
+
+				;InsertProc(&Array)
+ 000000E4			InsertProc	PROC
+ 000000E4  55				push	ebp
+ 000000E5  8B EC			mov		ebp,esp
+ 000000E7  50				push	eax
+ 000000E8  56				push	esi
+ 000000E9  52				push	edx
+ 000000EA  8B 75 08			mov		esi,[ebp+8]
+ 000000ED  BA 00000000			mov		edx,0
+ 000000F2			insertloop:
+					input	prompt1,string,30
+ 00000110  80 3D 000001B2 R		cmp		string,'q'
+	   71
+ 00000117  74 17			je		quitloop
+					atod	string
+ 00000128  89 06			mov		[esi],eax
+ 0000012A  42				inc		edx
+ 0000012B  83 C6 04			add		esi,4
+ 0000012E  EB C2			jmp		insertloop
+ 00000130			quitloop:
+ 00000130  89 15 00000168 R		mov		nbrele,edx
+ 00000136  5A				pop		edx
+ 00000137  5E				pop		esi
+ 00000138  58				pop		eax
+ 00000139  5D				pop		ebp
+ 0000013A  C3				ret
+ 0000013B			InsertProc	ENDP
+
+				;check(array,num,len)
+ 0000013B			CheckProc	PROC
+ 0000013B  55				push	ebp
+ 0000013C  8B EC			mov		ebp,esp
+ 0000013E  56				push	esi
+ 0000013F  53				push	ebx
+ 00000140  51				push	ecx
+ 00000141  8B 75 08			mov		esi,[ebp+8]
+ 00000144  8B 5D 0C			mov		ebx,[ebp+12]
+ 00000147  8B 4D 10			mov		ecx,[ebp+16]
+ 0000014A  B8 00000000			mov		eax,0
+ 0000014F			forloop:
+ 0000014F  3B 1E			cmp		ebx,[esi]
+ 00000151  75 08			jne		next
+ 00000153  8B 45 10			mov		eax,[ebp+16]
+ 00000156  2B C1			sub		eax,ecx
+ 00000158  40				inc		eax
+ 00000159  EB 05			jmp		quitcheckProc
+ 0000015B			next:
+ 0000015B  83 C6 04			add		esi,4
+ 0000015E  E2 EF			loop	forloop
+ 00000160			quitcheckProc:
+ 00000160  59				pop		ecx
+ 00000161  5B				pop		ebx
+ 00000162  5E				pop		esi
+ 00000163  5D				pop		ebp
+ 00000164  C3				ret
+ 00000165			CheckProc	ENDP
+				END
+
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/25/20 16:18:04
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+Insert . . . . . . . . . . . . .	Proc
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+check  . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000204 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000165 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+CheckProc  . . . . . . . . . . .	P Near	 0000013B _TEXT	Length= 0000002A Public
+  forloop  . . . . . . . . . . .	L Near	 0000014F _TEXT	
+  next . . . . . . . . . . . . .	L Near	 0000015B _TEXT	
+  quitcheckProc  . . . . . . . .	L Near	 00000160 _TEXT	
+InsertProc . . . . . . . . . . .	P Near	 000000E4 _TEXT	Length= 00000057 Public
+  insertloop . . . . . . . . . .	L Near	 000000F2 _TEXT	
+  quitloop . . . . . . . . . . .	L Near	 00000130 _TEXT	
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000000E4 Public
+  whileloop  . . . . . . . . . .	L Near	 0000000F _TEXT	
+  notexist . . . . . . . . . . .	L Near	 000000A4 _TEXT	
+  quit . . . . . . . . . . . . .	L Near	 000000DE _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+answer . . . . . . . . . . . . .	Byte	 000001D0 _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+nbrArray . . . . . . . . . . . .	DWord	 00000000 _DATA	
+nbrele . . . . . . . . . . . . .	DWord	 00000168 _DATA	
+number . . . . . . . . . . . . .	DWord	 0000016C _DATA	
+prompt1  . . . . . . . . . . . .	Byte	 00000170 _DATA	
+prompt2  . . . . . . . . . . . .	Byte	 00000199 _DATA	
+result . . . . . . . . . . . . .	Byte	 000001DC _DATA	
+string . . . . . . . . . . . . .	Byte	 000001B2 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

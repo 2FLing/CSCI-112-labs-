@@ -1,0 +1,103 @@
+Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/25/20 21:13:56
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program -- adds two numbers
+				; Author:  R. Detmer
+				; Date:    1/2008
+
+				INCLUDE io.h            ; header file for input/output
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+
+ 00000000			.DATA               ; reserve storage for data
+ 00000000 00000000		number1   DWORD   ?
+ 00000004 00000000		number2   DWORD   ?
+ 00000008 45 6E 74 65 72	prompt1   BYTE    "Enter first number", 0
+	   20 66 69 72 73
+	   74 20 6E 75 6D
+	   62 65 72 00
+ 0000001B 45 6E 74 65 72	prompt2   BYTE    "Enter second number", 0
+	   20 73 65 63 6F
+	   6E 64 20 6E 75
+	   6D 62 65 72 00
+ 0000002F  00000028 [		string    BYTE    40 DUP (?)
+	    00
+	   ]
+ 00000057 54 68 65 20 73	resultLbl BYTE    "The sum is", 0
+	   75 6D 20 69 73
+	   00
+ 00000062  0000000B [		sum       BYTE    11 DUP(?), 0
+	    00
+	   ] 00
+
+ 00000000			.CODE
+ 00000000			MainProc  PROC
+ 00000000  48/ 83 EC 78		          sub     rsp, 120        ; reserve stack space for MainProc
+				          input   prompt1, string, 40   ; read ASCII characters
+				          atod    string          ; convert to integer
+ 00000090  89 05 00000000 R	          mov     number1, eax    ; store in memory
+
+				          input   prompt2, string, 40   ; repeat for second number
+				          atod    string
+ 00000122  89 05 00000004 R	          mov     number2, eax
+				        
+ 00000128  8B 05 00000000 R	          mov     eax, number1    ; first number to EAX
+ 0000012E  03 05 00000004 R	          add     eax, number2    ; add second number
+				          dtoa    sum, eax        ; convert to ASCII characters
+				          output  resultLbl, sum  ; output label and sum
+
+ 000001B3  48/ 83 C4 78		          add     rsp, 120        ; restore stack
+ 000001B7  48/ C7 C0		          mov     rax, 0          ; value to return (0)
+	   00000000
+ 000001BE  C3			          ret
+ 000001BF			MainProc ENDP
+				END
+
+Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/25/20 21:13:56
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+MainProc . . . . . . . . . . . .	P 	 00000000 _TEXT	Length= 000001BF Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+atodproc . . . . . . . . . . . .	L 	 00000000 External
+atowproc . . . . . . . . . . . .	L 	 00000000 External
+dtoaproc . . . . . . . . . . . .	L 	 00000000 External
+getInput . . . . . . . . . . . .	L 	 00000000 External
+number1  . . . . . . . . . . . .	DWord	 00000000 _DATA	
+number2  . . . . . . . . . . . .	DWord	 00000004 _DATA	
+prompt1  . . . . . . . . . . . .	Byte	 00000008 _DATA	
+prompt2  . . . . . . . . . . . .	Byte	 0000001B _DATA	
+resultLbl  . . . . . . . . . . .	Byte	 00000057 _DATA	
+showOutput . . . . . . . . . . .	L 	 00000000 External
+string . . . . . . . . . . . . .	Byte	 0000002F _DATA	
+sum  . . . . . . . . . . . . . .	Byte	 00000062 _DATA	
+wtoaproc . . . . . . . . . . . .	L 	 00000000 External
+
+	   0 Warnings
+	   0 Errors

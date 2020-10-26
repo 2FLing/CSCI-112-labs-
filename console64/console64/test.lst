@@ -1,13 +1,8 @@
-Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/22/20 12:30:29
+Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/25/20 21:13:00
 test.asm						     Page 1 - 1
 
 
-				.586
-test.asm(1) : error A2008:syntax error : .
-				.MODEL FLAT
-test.asm(2) : error A2008:syntax error : .
-				.STACK  4096            
-test.asm(3) : error A2008:syntax error : .
+				       
  00000000			.DATA                  
  00000000 FF20			   op   WORD    -224
  00000000			.CODE                           ; start of main program code
@@ -18,7 +13,7 @@ test.asm(3) : error A2008:syntax error : .
  00000006  C3			       ret
  00000007			main ENDP
 				END                             ; end of source code
-Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/22/20 12:30:29
+Microsoft (R) Macro Assembler (x64) Version 14.27.29111.0   10/25/20 21:13:00
 test.asm						     Symbols 2 - 1
 
 
@@ -39,4 +34,4 @@ Symbols:
 op . . . . . . . . . . . . . . .	Word	 00000000 _DATA	
 
 	   0 Warnings
-	   3 Errors
+	   0 Errors

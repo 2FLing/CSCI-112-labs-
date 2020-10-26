@@ -1,4 +1,1 @@
-﻿test.asm(1): error A2008: syntax error : .
-test.asm(2): error A2008: syntax error : .
-test.asm(3): error A2008: syntax error : .
-C:\Users\Administrator\Desktop\lab(csci-112)\console64\masm64.targets(45,5): error MSB3721: The command "ml64 /c /Zi /Fl  test.asm" exited with code 1.
+﻿  console64.vcxproj -> C:\Users\Administrator\Desktop\lab(csci-112)\console64\x64\Debug\console64.exe
