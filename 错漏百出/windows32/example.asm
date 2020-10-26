@@ -1,4 +1,3 @@
-; Example assembly language program -- adds 158 to number in memory
 ; Author:  MingkuanPang
 ; Date:    10/24/2020    
 
