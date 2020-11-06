@@ -1,0 +1,154 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    11/02/20 13:21:48
+example.asm						     Page 1 - 1
+
+
+				; Author:  MingkuanPang
+				; Date:    10/29/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+ 00000000 B70589A4		source		  DWORD		0b70589a4h
+ 00000004  00000009 [		dest	  BYTE	9 DUP  (?),0
+	    00
+	   ] 00
+ 0000000E 43 6F 6E 76 65	result	  BYTE	"Convert to ascii the result is:",0
+	   72 74 20 74 6F
+	   20 61 73 63 69
+	   69 20 74 68 65
+	   20 72 65 73 75
+	   6C 74 20 69 73
+	   3A 00
+ 0000002E 50 6C 65 61 73	inprompt	  BYTE	"Please enter a hex number:",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   68 65 78 20 6E
+	   75 6D 62 65 72
+	   3A 00
+ 00000049  0000001E [		string		BYTE	30	DUP (?)
+	    00
+	   ]
+
+				convertHex		Macro	val1,val2
+					lea		eax,val2
+					push	eax
+					mov		eax,val1
+					push	eax
+					call	convertHexProc
+					add		esp,8
+					ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					
+					convertHex	source,dest
+					output	result,dest
+ 0000002E  B8 00000000			mov		eax,0
+ 00000033  C3				ret
+ 00000034			_MainProc    ENDP
+
+				;val1,val2(array)
+ 00000034			convertHexProc		PROC
+ 00000034  55				push	ebp
+ 00000035  8B EC			mov		ebp,esp
+ 00000037  50				push	eax
+ 00000038  51				push	ecx
+ 00000039  53				push	ebx
+ 0000003A  52				push	edx
+ 0000003B  8B 45 08			mov		eax,[ebp+8]
+ 0000003E  8B 55 0C			mov		edx,[ebp+12]
+ 00000041  B9 00000008			mov		ecx,8
+ 00000046			forloop:
+ 00000046  8B D8			mov		ebx,eax
+ 00000048  83 E3 0F			and		ebx,00001111b
+ 0000004B  83 FB 09			cmp		ebx,9h
+ 0000004E  7F 05			jg		ifchar
+ 00000050  80 CB 30			or		bl,30h
+ 00000053  EB 03			jmp		ending
+ 00000055				ifchar:
+ 00000055  80 C3 37			add		bl,'A'-10
+ 00000058				ending:
+ 00000058  88 5C 0A FF			mov		[edx+ecx-1],bl
+ 0000005C  C1 E8 04			shr		eax,4
+ 0000005F  E2 E5			loop	forloop
+ 00000061  5A				pop		edx
+ 00000062  5B				pop		ebx
+ 00000063  59				pop		ecx
+ 00000064  58				pop		eax
+ 00000065  5D				pop		ebp
+ 00000066  C3				ret
+ 00000067			convertHexProc		ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    11/02/20 13:21:48
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+convertHex . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000067 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000067 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000034 Public
+convertHexProc . . . . . . . . .	P Near	 00000034 _TEXT	Length= 00000033 Public
+  forloop  . . . . . . . . . . .	L Near	 00000046 _TEXT	
+  ifchar . . . . . . . . . . . .	L Near	 00000055 _TEXT	
+  ending . . . . . . . . . . . .	L Near	 00000058 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dest . . . . . . . . . . . . . .	Byte	 00000004 _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+inprompt . . . . . . . . . . . .	Byte	 0000002E _DATA	
+result . . . . . . . . . . . . .	Byte	 0000000E _DATA	
+source . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+string . . . . . . . . . . . . .	Byte	 00000049 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

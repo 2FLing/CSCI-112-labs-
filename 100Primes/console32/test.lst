@@ -1,0 +1,99 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    11/05/20 17:55:07
+test.asm						     Page 1 - 1
+
+
+				.586
+				.MODEL FLAT
+
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA                   ; reserve storage for data
+ 00000000  000000C8 [		primeArray   DWORD   200 DUP(?)
+	    00000000
+	   ]
+ 00000320 00000000		primeCount   DWORD   0
+ 00000324 00000002		candidate    DWORD   2
+ 00000000			.CODE                           ; start of main program code
+ 00000000			main    PROC
+ 00000000  C7 05 00000320 R	        mov     primeCount,0  ;initialize the number of the prime number to 0
+	   00000000
+ 0000000A  BE 00000000		        mov     esi,0         ;initialize the index of the array to 0
+ 0000000F			        whileloop:
+ 0000000F  83 3D 00000320 R	        cmp     primeCount,100  ; when the count of the prime number is less then 100, keep finding next prime number
+	   64
+ 00000016  74 36		        je      endwhile        ; otherwise quit finding prime number
+ 00000018  8B 0D 00000324 R	        mov     ecx,candidate   
+ 0000001E  49			        dec     ecx             
+ 0000001F			        forloop:                ;search if there is a divisor in the range between 2 and candidate number-1
+				                                ;for(int i=2; i<candidate;i++)
+ 0000001F  A1 00000324 R	        mov     eax,candidate
+ 00000024  83 F9 01		        cmp     ecx,1           
+ 00000027  74 0A		        je      endforloop      ; if ecx equals 1 then it means the candidate number is a prime number
+ 00000029  99			        cdq
+ 0000002A  F7 F9		        idiv    ecx
+ 0000002C  83 FA 00		        cmp     edx,0           
+ 0000002F  74 15		        je      nextNum         ;if candidate can be divided by the number in the range, then it is not a prime number
+				                                ;thus, move to next candidate
+ 00000031  E2 EC		        loop    forloop
+ 00000033			        endforloop:
+ 00000033  A1 00000324 R	        mov     eax,candidate
+ 00000038  89 04 B5		        mov     DWORD  PTR  primeArray[esi*4],eax   
+	   00000000 R
+ 0000003F  FF 05 00000320 R	        inc     primeCount       ;if the candidate number is prime number then primecount+1 and move the index of the array to next
+ 00000045  46			        inc     esi
+ 00000046			        nextNum:                 ; otherwise check next candidate without primecount+1 and set index to next
+ 00000046  FF 05 00000324 R	        inc     candidate
+ 0000004C  EB C1		        jmp     whileloop
+ 0000004E			        endwhile:
+ 0000004E  B8 00000000		        mov     eax,0
+ 00000053  C3			        ret
+ 00000054			main    ENDP
+
+				END                             ; end of source code
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    11/05/20 17:55:07
+test.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000328 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000054 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000054 Public
+  whileloop  . . . . . . . . . .	L Near	 0000000F _TEXT	
+  forloop  . . . . . . . . . . .	L Near	 0000001F _TEXT	
+  endforloop . . . . . . . . . .	L Near	 00000033 _TEXT	
+  nextNum  . . . . . . . . . . .	L Near	 00000046 _TEXT	
+  endwhile . . . . . . . . . . .	L Near	 0000004E _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+candidate  . . . . . . . . . . .	DWord	 00000324 _DATA	
+primeArray . . . . . . . . . . .	DWord	 00000000 _DATA	
+primeCount . . . . . . . . . . .	DWord	 00000320 _DATA	
+
+	   0 Warnings
+	   0 Errors

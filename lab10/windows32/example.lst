@@ -1,0 +1,134 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/29/20 16:25:38
+example.asm						     Page 1 - 1
+
+
+				; Author:  MingkuanPang
+				; Date:    10/24/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+ 00000000 00000001		number1	DWORD	1
+ 00000004 00000002		number2	DWORD	2
+ 00000008 00000003		number3	DWORD	3
+ 0000000C 61			letter	BYTE	'a'
+
+				ADD3	MACRO	num1,num2,num3
+					mov		eax,num1
+					add		eax,num2
+					add		eax,num3
+					ENDM
+				MAX2	MACRO	num1,num2
+					LOCAL	endif
+					mov		eax,num1
+					cmp		eax,num2
+					jge		endif
+					mov		eax,num2
+					endif:
+					ENDM
+				MIN3	MACRO	num1,num2,num3
+					LOCAL	nextif
+					LOCAL	ending
+					mov		eax,num1
+					cmp		eax,num2
+					jle		nextif
+					mov		eax,num2
+					nextif:
+					cmp		eax,num3
+					jle		ending
+					mov		eax,num3
+					ending:
+					ENDM
+				Toupper		MACRO	letter
+					LOCAL	ending
+					cmp		letter,61h
+					jl		ending
+					push	eax
+					lea		eax,letter
+					sub		BYTE PTR [eax],20h
+					pop		eax
+					ending:
+					ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					;ADD3	number1,number2,number3
+					;MAX2	number1,number2
+					;MIN3	number1,number2,number3
+					toUpper	letter
+ 00000014  B8 00000000			mov		eax,0
+ 00000019  C3				ret
+ 0000001A			_MainProc    ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    10/29/20 16:25:38
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+ADD3 . . . . . . . . . . . . . .	Proc
+MAX2 . . . . . . . . . . . . . .	Proc
+MIN3 . . . . . . . . . . . . . .	Proc
+Toupper  . . . . . . . . . . . .	Proc
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000000D Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000001A Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000001A Public
+  ??0000 . . . . . . . . . . . .	L Near	 00000014 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+letter . . . . . . . . . . . . .	Byte	 0000000C _DATA	
+number1  . . . . . . . . . . . .	DWord	 00000000 _DATA	
+number2  . . . . . . . . . . . .	DWord	 00000004 _DATA	
+number3  . . . . . . . . . . . .	DWord	 00000008 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors
