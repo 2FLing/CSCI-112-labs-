@@ -1,0 +1,175 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    11/08/20 20:27:31
+example.asm						     Page 1 - 1
+
+
+				; Author:  MingkuanPang
+				; Date:    10/29/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+
+ 00000000  0000001E [		string	BYTE	30	DUP(0),0
+	    00
+	   ] 00
+ 0000001F 00000000		num		DWORD	0
+ 00000023 50 6C 65 61 73	inprompt	BYTE	"Please enter your binary number",0
+	   65 20 65 6E 74
+	   65 72 20 79 6F
+	   75 72 20 62 69
+	   6E 61 72 79 20
+	   6E 75 6D 62 65
+	   72 00
+ 00000043  0000000B [		result	BYTE	11 DUP(?),0
+	    00
+	   ] 00
+ 0000004F 43 6F 6E 76 65	answer	BYTE	"Convert it to decimal it will be :",0
+	   72 74 20 69 74
+	   20 74 6F 20 64
+	   65 63 69 6D 61
+	   6C 20 69 74 20
+	   77 69 6C 6C 20
+	   62 65 20 3A 00
+				btod MACRO	str,num
+					lea		eax,num
+					push	eax
+					lea		eax,str
+					push	eax
+					call	btodProc
+					add		esp,8
+					ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC	
+					input	inprompt,string,30
+					btod	string,num
+					dtoa	result,num
+					output	answer,result
+ 00000069  C3				ret
+ 0000006A			_MainProc    ENDP
+
+				;convert binary to decimal
+ 0000006A			btodProc	PROC
+ 0000006A  55				push	ebp
+ 0000006B  8B EC			mov		ebp,esp
+ 0000006D  56				push	esi
+ 0000006E  50				push	eax
+ 0000006F  53				push	ebx
+ 00000070  51				push	ecx
+ 00000071  8B 75 08			mov		esi,[ebp+8];string
+ 00000074  8B 45 0C			mov		eax,[ebp+12];num
+ 00000077  B9 FFFFFFFF			mov		ecx,-1h		;initialize ecx to -1, because the first place in binary num represent 2^0
+										; so when counting the digits of the num, it should start from -1.
+ 0000007C  80 3E 00			cmp		BYTE PTR [esi],0h ; if the num is '\0', that means it is a empty string, then quit the proc
+ 0000007F  74 3B			je		quitproc
+ 00000081				whileloop:			;count the digits of the binary num
+ 00000081  80 3E 00			cmp		BYTE PTR [esi],0h
+ 00000084  74 04			je		endwhileloop
+ 00000086  41				inc		ecx
+ 00000087  46				inc		esi
+ 00000088  EB F7			jmp		whileloop
+ 0000008A				endwhileloop:
+ 0000008A  2B F1			sub		esi,ecx		;reset the pointer to the first digit of the binary num
+ 0000008C  4E				dec		esi
+ 0000008D  BB 00000001			mov		ebx,1
+ 00000092  D3 E3			shl		ebx,cl		;2^n(n==cl)
+ 00000094  80 3E 30			cmp		BYTE PTR [esi],'0'
+ 00000097  74 07			je		bytezero
+ 00000099  B9 00000001			mov		ecx,1
+ 0000009E  EB 05			jmp		setdigit
+ 000000A0				bytezero:
+ 000000A0  B9 00000000			mov		ecx,0	;check the digit is '0' or '1', digit of decimal should be n(num on that digit)*2^m(digits on the binary num)
+ 000000A5				setdigit:
+ 000000A5  66| 81 E1 00FF		and		cx,000000ffh
+ 000000AA  0F AF D9			imul	ebx,ecx
+ 000000AD  01 18			add		DWORD PTR [eax],ebx
+ 000000AF  46				inc		esi
+ 000000B0  8B DE			mov		ebx,esi
+ 000000B2  50				push	eax
+ 000000B3  56				push	esi
+ 000000B4  E8 FFFFFFB1			call	btodProc
+ 000000B9  83 C4 08			add		esp,8
+ 000000BC				quitproc:
+ 000000BC  59				pop		ecx
+ 000000BD  5B				pop		ebx
+ 000000BE  58				pop		eax
+ 000000BF  5E				pop		esi
+ 000000C0  5D				pop		ebp
+ 000000C1  C3				ret
+ 000000C2			btodProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    11/08/20 20:27:31
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+btod . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000072 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000C2 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000006A Public
+btodProc . . . . . . . . . . . .	P Near	 0000006A _TEXT	Length= 00000058 Public
+  whileloop  . . . . . . . . . .	L Near	 00000081 _TEXT	
+  endwhileloop . . . . . . . . .	L Near	 0000008A _TEXT	
+  bytezero . . . . . . . . . . .	L Near	 000000A0 _TEXT	
+  setdigit . . . . . . . . . . .	L Near	 000000A5 _TEXT	
+  quitproc . . . . . . . . . . .	L Near	 000000BC _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+answer . . . . . . . . . . . . .	Byte	 0000004F _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+inprompt . . . . . . . . . . . .	Byte	 00000023 _DATA	
+num  . . . . . . . . . . . . . .	DWord	 0000001F _DATA	
+result . . . . . . . . . . . . .	Byte	 00000043 _DATA	
+string . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

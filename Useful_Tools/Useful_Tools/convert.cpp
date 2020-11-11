@@ -1,5 +1,6 @@
 #include"convert.h"
 using namespace std;
+//convert decimal to byte
 string dtob(int num)
 {
 	if (num <2)
@@ -9,7 +10,7 @@ string dtob(int num)
 		return dtob(num / 2) + to_string(num % 2);
 	}
 }
-
+//convert decimal to octal
 string dtoo(int num)
 {
 	if (num < 8)
@@ -19,7 +20,7 @@ string dtoo(int num)
 		return dtoo(num / 8) + to_string(num % 8);
 	}
 }
-
+//convert decimal to hex
 string dtoh(int num)
 {
 	if (num < 16)
@@ -37,6 +38,19 @@ string dtoh(int num)
 	else
 	{
 		return dtoh(num / 16) + dtoh(num % 16);
+	}
+}
+//convert binary to decimal
+int btod(string num)
+{
+	if (num=="1" or num=="0")
+	{
+		return (int(num.at(0))-48)*pow(2, num.length() - 1);
+	}
+	else
+	{
+
+		return (int(num.at(0)) - 48) * pow(2, num.length() - 1)+btod(num.substr(1,num.length()-1));
 	}
 }
 //assembly language

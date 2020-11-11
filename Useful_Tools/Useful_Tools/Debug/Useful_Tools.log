@@ -1,2 +1,4 @@
-﻿  main.cpp
+﻿  convert.cpp
+C:\Users\Administrator\Desktop\lab(csci-112)\Useful_Tools\Useful_Tools\convert.cpp(48,29): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
+C:\Users\Administrator\Desktop\lab(csci-112)\Useful_Tools\Useful_Tools\convert.cpp(53,58): warning C4244: 'return': conversion from 'double' to 'int', possible loss of data
   Useful_Tools.vcxproj -> C:\Users\Administrator\Desktop\lab(csci-112)\Useful_Tools\Debug\Useful_Tools.exe

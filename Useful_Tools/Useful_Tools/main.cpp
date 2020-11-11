@@ -5,23 +5,9 @@ using namespace std;
 bool is_prime(int);
 int main()
 {
-	vector<int>num;
-	vector<int>::iterator it;
-	int count = 0;
-	int candicate = 2;
-	while (count < 100)
-	{
-		if (is_prime(candicate))
-		{
-			num.push_back(candicate);
-			count++;
-		}
-		candicate++;
-	}
-	for (it = num.begin(); it != num.end(); it++)
-	{
-		cout << dtoh(*it) << endl;
-	}
+	string str;
+	cin >> str;
+	cout << btod(str) << endl;
 	return 0;
 }
 bool is_prime(int num)
