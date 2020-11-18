@@ -1,0 +1,126 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/17/20 16:37:51
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program
+				; This program search a substring from a string
+				;It will print the substring if it be found,
+				;otherwise it will print fail finding substring.
+				; all the strings that had been inputed
+				; Author:  MingkuanPang
+				; Date:    11/15/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+				;source		BYTE	"brown"
+				;dest		BYTE	"brine"
+				;source		BYTE	"broke"
+				;dest		BYTE	"spoke"
+ 00000000 62 72 6F 6B 65	source		BYTE	"broke"
+ 00000005 62 6C 6F 6B 65	dest		BYTE	"bloke"
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					;lea		esi,source
+					;lea		edi,dest
+					;mov		ecx,5
+					;mov		ecx,3
+					;cld
+					;repne	cmpsb
+					;repe	cmpsb
+					;mov	al,'w'
+					;mov	al,'n'
+					;mov	al,'*'
+					;repne	scasb
+					;rep	stosb
+					;for6:
+					;lodsb
+					;inc	al
+					;stosb
+					;loop	for6
+					;rep	movsb
+					;lea		esi,source+4
+					;lea		edi,dest+4
+					;std
+					;mov		ecx,3
+					;rep		movsb
+					;lea		esi,source
+					;lea		edi,dest
+					;cld
+					;mov		ecx,5
+					;repne		cmpsb
+ 00000000  8D 35 00000004 R		lea			esi,source+4
+ 00000006  8D 3D 00000009 R		lea			edi,dest+4
+ 0000000C  FD				std
+ 0000000D  B9 00000005			mov			ecx,5
+ 00000012  F3/ A6			repe		cmpsb
+ 00000014  B8 00000000			mov		eax,0
+ 00000019  C3				ret
+ 0000001A			_MainProc    ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/17/20 16:37:51
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000000A Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000001A Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000001A Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dest . . . . . . . . . . . . . .	Byte	 00000005 _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+source . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

@@ -1,0 +1,185 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/17/20 20:18:42
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program
+				; This program will find and print 
+				;the position of the first occurrence of a character
+				;om a null-terminated string.
+				; all the strings that had been inputed
+				; Author:  MingkuanPang
+				; Date:    11/17/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+ 00000000  00000005 [		char	BYTE	5	DUP (?)
+	    00
+	   ]
+ 00000005  00000050 [		string1	BYTE	80	DUP (?)
+	    00
+	   ]
+ 00000055  00000050 [		string2	BYTE	80	DUP (?)
+	    00
+	   ]
+ 000000A5 00000000		str1Len	DWORD	?
+ 000000A9 00000000		str2Len	DWORD	?
+ 000000AD 50 6C 65 61 73	inputPrompt		BYTE	"Please enter a string:",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   73 74 72 69 6E
+	   67 3A 00
+ 000000C4 50 6C 65 61 73	inputPrompt2	BYTE	"Please enter another string:",0
+	   65 20 65 6E 74
+	   65 72 20 61 6E
+	   6F 74 68 65 72
+	   20 73 74 72 69
+	   6E 67 3A 00
+ 000000E1 54 68 65 20 72	resultLbl		BYTE	"The result will be: ",0
+	   65 73 75 6C 74
+	   20 77 69 6C 6C
+	   20 62 65 3A 20
+	   00
+
+				append	MACRO	string1,string2
+					lea		eax,string2
+					push	eax
+					lea		eax,string1
+					push	eax
+					call	appendProc
+					add		esp,8
+					ENDM
+				strLen	MACRO	string
+					lea		eax,string
+					push	eax
+					call	strLenProc
+					add		esp,4
+					ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					input	inputPrompt,string1,80
+					input	inputPrompt2,string2,80
+					strLen	string1
+ 0000004B  A3 000000A5 R		mov		str1Len,eax
+					strLen	string2
+ 0000005F  A3 000000A9 R		mov		str2Len,eax
+					append	string1,string2
+					output	resultLbl,string1
+ 00000093  B8 00000000			mov		eax,0
+ 00000098  C3				ret
+ 00000099			_MainProc    ENDP
+
+ 00000099			appendProc	PROC
+ 00000099  55				push	ebp
+ 0000009A  8B EC			mov		ebp,esp
+ 0000009C  56				push	esi
+ 0000009D  57				push	edi
+ 0000009E  8B 75 0C			mov		esi,[ebp+12]
+ 000000A1  8B 7D 08			mov		edi,[ebp+8]
+ 000000A4  03 3D 000000A5 R		add		edi,str1Len
+ 000000AA  8B 0D 000000A9 R		mov		ecx,str2Len
+ 000000B0  FC				cld
+ 000000B1  F3/ A4			rep		movsb
+ 000000B3  5F				pop		edi
+ 000000B4  5E				pop		esi
+ 000000B5  5D				pop		ebp
+ 000000B6  C3				ret
+ 000000B7			appendProc	ENDP
+
+
+ 000000B7			strLenProc	PROC
+ 000000B7  55				push	ebp
+ 000000B8  8B EC			mov		ebp,esp
+ 000000BA  53				push	ebx
+ 000000BB  8B 5D 08			mov		ebx,[ebp+8]
+ 000000BE  B8 00000000			mov		eax,0
+ 000000C3				countbytes:
+ 000000C3  80 3B 00			cmp		BYTE PTR [ebx],0
+ 000000C6  74 04			je		endcount
+ 000000C8  40				inc		eax
+ 000000C9  43				inc		ebx
+ 000000CA  EB F7			jmp		countbytes
+ 000000CC				endcount:
+ 000000CC  5B				pop		ebx
+ 000000CD  5D				pop		ebp
+ 000000CE  C3				ret
+ 000000CF			strlenProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/17/20 20:18:42
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+append . . . . . . . . . . . . .	Proc
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+strLen . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 000000F6 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000CF Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000099 Public
+appendProc . . . . . . . . . . .	P Near	 00000099 _TEXT	Length= 0000001E Public
+strLenProc . . . . . . . . . . .	P Near	 000000B7 _TEXT	Length= 00000018 Public
+  countbytes . . . . . . . . . .	L Near	 000000C3 _TEXT	
+  endcount . . . . . . . . . . .	L Near	 000000CC _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+char . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+inputPrompt2 . . . . . . . . . .	Byte	 000000C4 _DATA	
+inputPrompt  . . . . . . . . . .	Byte	 000000AD _DATA	
+resultLbl  . . . . . . . . . . .	Byte	 000000E1 _DATA	
+str1Len  . . . . . . . . . . . .	DWord	 000000A5 _DATA	
+str2Len  . . . . . . . . . . . .	DWord	 000000A9 _DATA	
+string1  . . . . . . . . . . . .	Byte	 00000005 _DATA	
+string2  . . . . . . . . . . . .	Byte	 00000055 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

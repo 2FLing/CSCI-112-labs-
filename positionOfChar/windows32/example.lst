@@ -1,0 +1,202 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/17/20 19:47:05
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program
+				; This program search a substring from a string
+				;It will print the substring if it be found,
+				;otherwise it will print fail finding substring.
+				; all the strings that had been inputed
+				; Author:  MingkuanPang
+				; Date:    11/15/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+ 00000000  00000005 [		char	BYTE	5	DUP (?)
+	    00
+	   ]
+ 00000005  00000050 [		string	BYTE	80	DUP (?)
+	    00
+	   ]
+ 00000055 00000000		strLen	DWORD	?
+ 00000059 50 6C 65 61 73	inputPrompt		BYTE	"Please enter a string:",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   73 74 72 69 6E
+	   67 3A 00
+ 00000070 50 6C 65 61 73	inputPrompt2	BYTE	"Please enter a character:",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   63 68 61 72 61
+	   63 74 65 72 3A
+	   00
+ 0000008A 54 68 65 20 72	resultLbl		BYTE	"The result will be: ",0
+	   65 73 75 6C 74
+	   20 77 69 6C 6C
+	   20 62 65 3A 20
+	   00
+ 0000009F  0000000B [		position		BYTE	11 DUP (?),0
+	    00
+	   ] 00
+ 000000AB 54 68 69 73 20	notFoundLbl		BYTE	"This character was not found in the string",0
+	   63 68 61 72 61
+	   63 74 65 72 20
+	   77 61 73 20 6E
+	   6F 74 20 66 6F
+	   75 6E 64 20 69
+	   6E 20 74 68 65
+	   20 73 74 72 69
+	   6E 67 00
+				find_pos MACRO	char,string
+					lea		eax,string
+					push	eax
+					mov		al,char
+					push	ax
+					call	find_posProc
+					add		esp,6
+					ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					input		inputPrompt,string,80
+					input		inputprompt2,char,5
+ 0000003C  8D 05 00000005 R		lea			eax,string
+ 00000042  50				push		eax
+ 00000043  E8 000000A4			call		strLenProc
+ 00000048  83 C4 04			add			esp,4
+ 0000004B  A3 00000055 R		mov			strLen,eax	
+					find_pos	char,string
+ 00000066  83 F8 00			cmp			eax,0
+ 00000069  74 33			jz			charNotFound
+					dtoa		position,eax
+					output		resultLbl,position
+ 0000009C  EB 19			jmp			endprogram
+ 0000009E				charNotFound:
+					output		resultLbl,notFoundLbl
+ 000000B7				endprogram:
+ 000000B7  B8 00000000			mov			eax,0
+ 000000BC  C3				ret
+ 000000BD			_MainProc    ENDP
+ 000000BD			find_posProc	PROC
+ 000000BD  55				push	ebp
+ 000000BE  8B EC			mov		ebp,esp
+ 000000C0  57				push	edi
+ 000000C1  51				push	ecx
+ 000000C2  8B 7D 0A			mov		edi,[ebp+10]
+ 000000C5  8A 45 08			mov		al,[ebp+8]
+ 000000C8  8B 0D 00000055 R		mov		ecx,strLen
+ 000000CE  FC				cld
+ 000000CF  F2/ AE			repne	scasb
+ 000000D1  80 3F 00			cmp		BYTE PTR [edi],0
+ 000000D4  74 0D			jz		fail
+ 000000D6  29 0D 00000055 R		sub		strLen,ecx
+ 000000DC  A1 00000055 R		mov		eax,strLen
+ 000000E1  EB 05			jmp		endFindPos
+ 000000E3				fail:
+ 000000E3  B8 00000000			mov		eax,0
+ 000000E8				endFindPos:
+ 000000E8  59				pop		ecx
+ 000000E9  5F				pop		edi
+ 000000EA  5D				pop		ebp
+ 000000EB  C3				ret	
+ 000000EC			find_posProc	ENDP
+
+ 000000EC			strLenProc	PROC
+ 000000EC  55				push	ebp
+ 000000ED  8B EC			mov		ebp,esp
+ 000000EF  53				push	ebx
+ 000000F0  8B 5D 08			mov		ebx,[ebp+8]
+ 000000F3  B8 00000000			mov		eax,0
+ 000000F8				countbytes:
+ 000000F8  80 3B 00			cmp		BYTE PTR [ebx],0
+ 000000FB  74 04			je		endcount
+ 000000FD  40				inc		eax
+ 000000FE  43				inc		ebx
+ 000000FF  EB F7			jmp		countbytes
+ 00000101				endcount:
+ 00000101  5B				pop		ebx
+ 00000102  5D				pop		ebp
+ 00000103  C3				ret
+ 00000104			strlenProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/17/20 19:47:05
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+find_pos . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 000000D6 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000104 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000000BD Public
+  charNotFound . . . . . . . . .	L Near	 0000009E _TEXT	
+  endprogram . . . . . . . . . .	L Near	 000000B7 _TEXT	
+find_posProc . . . . . . . . . .	P Near	 000000BD _TEXT	Length= 0000002F Public
+  fail . . . . . . . . . . . . .	L Near	 000000E3 _TEXT	
+  endFindPos . . . . . . . . . .	L Near	 000000E8 _TEXT	
+strLenProc . . . . . . . . . . .	P Near	 000000EC _TEXT	Length= 00000018 Public
+  countbytes . . . . . . . . . .	L Near	 000000F8 _TEXT	
+  endcount . . . . . . . . . . .	L Near	 00000101 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+char . . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+inputPrompt2 . . . . . . . . . .	Byte	 00000070 _DATA	
+inputPrompt  . . . . . . . . . .	Byte	 00000059 _DATA	
+notFoundLbl  . . . . . . . . . .	Byte	 000000AB _DATA	
+position . . . . . . . . . . . .	Byte	 0000009F _DATA	
+resultLbl  . . . . . . . . . . .	Byte	 0000008A _DATA	
+strLen . . . . . . . . . . . . .	DWord	 00000055 _DATA	
+string . . . . . . . . . . . . .	Byte	 00000005 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

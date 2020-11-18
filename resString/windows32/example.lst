@@ -1,0 +1,170 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/16/20 00:40:05
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program
+				; This program search a substring from a string
+				;It will print the substring if it be found,
+				;otherwise it will print fail finding substring.
+				; all the strings that had been inputed
+				; Author:  MingkuanPang
+				; Date:    11/15/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+ 00000000  0000005A [		string			BYTE	90 DUP(?)
+	    00
+	   ]
+ 0000005A  00000005 [		char			BYTE	5  DUP(?)
+	    00
+	   ]
+ 0000005F 50 6C 65 61 73	inprompt		BYTE	"Please enter a string",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   73 74 72 69 6E
+	   67 00
+ 00000075 50 6C 65 61 73	charprompt		BYTE	"Please enter a character",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   63 68 61 72 61
+	   63 74 65 72 00
+ 0000008E 54 68 65 20 72	resultLbl		BYTE	"The rest of string is: ",0
+	   65 73 74 20 6F
+	   66 20 73 74 72
+	   69 6E 67 20 69
+	   73 3A 20 00
+
+				reString  MACRO	str,char
+						mov		eax,0
+						mov		al,char
+						push	eax
+						lea		eax,str
+						push	eax
+						call	reStringProc
+						add		esp,8
+						ENDM
+
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					input		inprompt,string,90
+					input		charprompt,char,5
+					reString	string,char
+					output		resultLbl,[eax]
+ 0000006B  C3				ret
+ 0000006C			_MainProc    ENDP
+
+ 0000006C			reStringProc	PROC
+ 0000006C  55				push	ebp
+ 0000006D  8B EC			mov		ebp,esp
+ 0000006F  57				push	edi
+ 00000070  51				push	ecx
+ 00000071  8B 7D 08			mov		edi,[ebp+8]
+ 00000074  57				push	edi
+ 00000075  E8 00000013			call	strLenProc
+ 0000007A  83 C4 04			add		esp,4
+ 0000007D  40				inc		eax
+ 0000007E  8B C8			mov		ecx,eax
+ 00000080  8B 45 0C			mov		eax,[ebp+12]
+ 00000083  FC				cld
+ 00000084  F2/ AE			repne	scasb
+ 00000086  4F				dec		edi
+ 00000087  8B C7			mov		eax,edi
+ 00000089  59				pop		ecx
+ 0000008A  5F				pop		edi
+ 0000008B  5D				pop		ebp
+ 0000008C  C3				ret
+ 0000008D			reStringProc	ENDP
+
+ 0000008D			strLenProc	PROC
+ 0000008D  55				push	ebp
+ 0000008E  8B EC			mov		ebp,esp
+ 00000090  53				push	ebx
+ 00000091  8B 5D 08			mov		ebx,[ebp+8]
+ 00000094  B8 00000000			mov		eax,0
+ 00000099				countbytes:
+ 00000099  80 3B 00			cmp		BYTE PTR [ebx],0
+ 0000009C  74 04			je		endcount
+ 0000009E  40				inc		eax
+ 0000009F  43				inc		ebx
+ 000000A0  EB F7			jmp		countbytes
+ 000000A2				endcount:
+ 000000A2  5B				pop		ebx
+ 000000A3  5D				pop		ebp
+ 000000A4  C3				ret
+ 000000A5			strlenProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/16/20 00:40:05
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+reString . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 000000A6 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000A5 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000006C Public
+reStringProc . . . . . . . . . .	P Near	 0000006C _TEXT	Length= 00000021 Public
+strLenProc . . . . . . . . . . .	P Near	 0000008D _TEXT	Length= 00000018 Public
+  countbytes . . . . . . . . . .	L Near	 00000099 _TEXT	
+  endcount . . . . . . . . . . .	L Near	 000000A2 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+charprompt . . . . . . . . . . .	Byte	 00000075 _DATA	
+char . . . . . . . . . . . . . .	Byte	 0000005A _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+inprompt . . . . . . . . . . . .	Byte	 0000005F _DATA	
+resultLbl  . . . . . . . . . . .	Byte	 0000008E _DATA	
+string . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

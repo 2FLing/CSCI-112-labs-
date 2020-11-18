@@ -1,0 +1,227 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/13/20 00:46:34
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program -- adds 158 to number in memory
+				; Author:  MingkuanPang
+				; Date:    11/12/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC	
+				;7.1.1
+				;a)After: BX:3000 SF:0 ZF:0
+ 00000000  66| BB FA75			mov		bx,-1419	;FA75h
+ 00000004  66| B9 3102			mov		cx,3102h
+ 00000008  66| 23 D9			and		bx,cx
+
+				;b)After: BX:FB77 SF:1 ZF:0
+ 0000000B  66| BB FA75			mov		bx,-1419
+ 0000000F  66| 0B D9			or		bx,cx
+
+				;c)After: BX:CB77 SF:1 ZF:0
+ 00000012  66| BB FA75			mov		bx,-1419
+ 00000016  66| 33 D9			xor		bx,cx
+
+				;d)After: BX:058A
+ 00000019  66| BB FA75			mov		bx,-1419
+ 0000001D  66| F7 D3			not		bx
+
+				;e)After: AX:0005 SF:1 ZF:0
+ 00000020  66| B8 FA75			mov		ax,-1419
+ 00000024  66| 83 E0 0F			and		ax,000fh
+
+				;f)After: AX:FFF5 SF:1 ZF:0
+ 00000028  66| B8 FA75			mov		ax,-1419
+ 0000002C  66| 83 C8 F0			or		ax,0fff0h
+
+				;g)After: AX:058A SF:0 ZF:0
+ 00000030  66| B8 FA75			mov		ax,-1419
+ 00000034  66| 83 F0 FF			xor		ax,0ffffh
+
+				;h)After: AX:FA75 SF:0 ZF:0
+ 00000038  66| B8 FA75			mov		ax,-1419
+ 0000003C  66| A9 0004			test	ax,0004h
+
+				;i)After: CX:7145
+ 00000040  66| B9 8EBA			mov		cx,-28998	;8EBAh
+ 00000044  66| F7 D1			not		cx
+
+				;j)After: CX:EFFA SF:1 ZF:0
+ 00000047  66| B9 8EBA			mov		cx,-28998
+ 0000004B  66| 81 C9 EDF2		or		cx,-4622	;EDF2h
+
+				;k)After: CX:8CB2 SF:1 ZF:0
+ 00000050  66| B9 8EBA			mov		cx,-28998
+ 00000054  66| 81 E1 EDF2		and		cx,-4622
+
+				;l)After: CX:6348 SF:0 ZF:0
+ 00000059  66| B9 8EBA			mov		cx,-28998
+ 0000005D  66| 81 F1 EDF2		xor		cx,-4622
+
+				;m)After: CX:8EBA SF:1 ZF:0
+ 00000062  66| B9 8EBA			mov		cx,-28998
+ 00000066  66| F7 C1 EDF2		test	cx,-4622
+
+				;n)After: DX:495C
+ 0000006B  66| BA EDF2			mov		dx,-4622
+ 0000006F  66| F7 D2			not		dx
+
+				;o)After: DX:F6EB SF:1 ZF:0
+ 00000072  66| BA EDF2			mov		dx,-4622
+ 00000076  66| 81 CA 64C8		or		dx,25800
+
+				;p)After: DX:2480 SF:0 ZF:0
+ 0000007B  66| BA EDF2			mov		dx,-4622
+ 0000007F  66| 81 E2 64C8		and		dx,25800
+
+				;q)After: DX:D26B SF:1 ZF:0
+ 00000084  66| BA EDF2			mov		dx,-4622
+ 00000088  66| 81 F2 64C8		xor		dx,25800
+
+				;r)After: DX:B6A3 SF:0 ZF:0
+ 0000008D  66| BA EDF2			mov		dx,-4622
+ 00000091  66| F7 C2 64C8		test	dx,25800
+
+				;7.2.1
+
+				;a)After: AX:516A CF:1 OF:1
+ 00000096  66| B8 A8B5			mov	ax,-22347	;A8B5
+ 0000009A  66| D1 E0			shl	ax,1
+
+				;b)After: AX:545A CF:1 OF:1
+ 0000009D  66| B8 A8B5			mov	ax,-22347
+ 000000A1  66| D1 E8			shr	ax,1
+
+				;c)After: AX:D45A CF:1 OF:0
+ 000000A4  66| B8 A8B5			mov	ax,-22347
+ 000000A8  66| D1 F8			sar	ax,1
+
+				;d)After: AX:516B CF:1
+ 000000AB  66| B8 A8B5			mov	ax,-22347
+ 000000AF  66| D1 C0			rol	ax,1
+
+				;e)After: AX:D45A CF:1
+ 000000B2  66| B8 A8B5			mov	ax,-22347
+ 000000B6  66| D1 C8			ror	ax,1
+
+				;f)After: AX:8B50 CF:0
+ 000000B9  66| B8 A8B5			mov	ax,-22347
+ 000000BD  B1 04			mov	cl,04h
+ 000000BF  66| D3 E0			sal	ax,cl
+
+				;g)After: AX:0A8B CF:0
+ 000000C2  66| B8 A8B5			mov	ax,-22347
+ 000000C6  66| C1 E8 04			shr ax,4
+
+				;h)After: AX:FA8B CF:0
+ 000000CA  66| B8 A8B5			mov	ax,-22347
+ 000000CE  B1 04			mov	cl,04h
+ 000000D0  66| D3 F8			sar	ax,cl
+
+				;i)After: AX:8B5A CF:0
+ 000000D3  66| B8 A8B5			mov	ax,-22347
+ 000000D7  B1 04			mov	cl,04h
+ 000000D9  66| D3 C0			rol	ax,cl
+
+				;j)After: AX:5A8B CF:0
+ 000000DC  66| B8 A8B5			mov	ax,-22347
+ 000000E0  66| C1 C8 04			ror	ax,4
+
+				;k)After: AX:5A6B CF:1
+ 000000E4  66| B8 A8B5			mov	ax,-22347
+ 000000E8  F9				stc 
+ 000000E9  66| D1 D0			rcl	ax,1
+
+				;l)After: AX:545A CF:1
+ 000000EC  66| B8 A8B5			mov	ax,-22347
+ 000000F0  F8				clc
+ 000000F1  66| D1 D8			rcr	ax,1
+
+				;m)	After: BX:75D0 CF:0
+ 000000F4  66| BB 8EBA			mov	bx,-28998 ;8EBAh
+ 000000F8  66| C1 E3 03			shl	bx,3
+
+				;n)After: BX:11D7 CF:0
+ 000000FC  66| BB 8EBA			mov	bx,-28998
+ 00000100  66| C1 EB 03			shr bx,3
+
+				;o)After: BX:75D0 CF:0
+ 00000104  66| BB 8EBA			mov	bx,-28998
+ 00000108  66| C1 E3 03			sal	bx,3
+
+				;p)After: BX:F1D7 CF:0
+ 0000010C  66| BB 8EBA			mov	bx,-28998
+ 00000110  66| C1 FB 03			sar	bx,3
+
+ 00000114  B8 00000000			mov		eax,0
+ 00000119  C3				ret
+ 0000011A			_MainProc    ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/13/20 00:46:34
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000000 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000011A Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000011A Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

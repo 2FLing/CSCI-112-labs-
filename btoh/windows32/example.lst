@@ -1,0 +1,218 @@
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    11/09/20 04:19:43
+example.asm						     Page 1 - 1
+
+
+				; Author:  MingkuanPang
+				; Date:    10/29/2020    
+				;没人看得懂系列......
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+
+ 00000000  0000001E [		string	BYTE	30	DUP(0),0
+	    00
+	   ] 00
+ 0000001F 00000000		num		DWORD	0
+ 00000023 50 6C 65 61 73	inprompt	BYTE	"Please enter your octal number",0
+	   65 20 65 6E 74
+	   65 72 20 79 6F
+	   75 72 20 6F 63
+	   74 61 6C 20 6E
+	   75 6D 62 65 72
+	   00
+ 00000042  0000000B [		result	BYTE	11 DUP(?),0
+	    00
+	   ] 00
+ 0000004E 43 6F 6E 76 65	answer	BYTE	"Convert it to binary number it will be :",0
+	   72 74 20 69 74
+	   20 74 6F 20 62
+	   69 6E 61 72 79
+	   20 6E 75 6D 62
+	   65 72 20 69 74
+	   20 77 69 6C 6C
+	   20 62 65 20 3A
+	   00
+
+				otob	MACRO	num,str
+						lea		eax,str
+						push	eax
+						pushd	num
+						call	otobProc
+						add		esp,8
+						ENDM
+
+				btoh	MACRO	num,str ;convert byte value to dword value with decimal value instead of changing the num to hex
+						lea		eax,str
+						push	eax
+						lea		eax,num
+						push	eax
+						call	btohProc
+						add		esp,8
+						ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC	
+					input	inprompt,string,30
+					atod	string
+					btoh	num,string
+					otob	num,result
+					output	answer,result
+ 00000071  B8 00000000			mov		eax,0
+ 00000076  C3				ret
+ 00000077			_MainProc    ENDP
+				;num string
+ 00000077			otobProc	PROC
+ 00000077  55				push	ebp
+ 00000078  8B EC			mov		ebp,esp
+ 0000007A  50				push	eax
+ 0000007B  56				push	esi
+ 0000007C  51				push	ecx
+ 0000007D  53				push	ebx
+ 0000007E  52				push	edx
+ 0000007F  8B 45 08			mov		eax,[ebp+8]
+ 00000082  8B 75 0C			mov		esi,[ebp+12]
+ 00000085  25 00000FFF			and		eax,0000fffh
+ 0000008A  B9 00000003			mov		ecx,3
+ 0000008F  66| C1 C0 04			rol		ax,4
+ 00000093				forloop:
+ 00000093  66| C1 C0 04			rol		ax,4
+ 00000097  8B D8			mov		ebx,eax
+ 00000099  66| 83 E3 0F			and		bx,000fh
+ 0000009D  66| C1 C3 0D			rol		bx,13
+ 000000A1  8B D1			mov		edx,ecx
+ 000000A3  B9 00000003			mov		ecx,3
+ 000000A8				forloop2:
+ 000000A8  66| D1 C3			rol		bx,1
+ 000000AB  73 05			jnc		elsezero
+ 000000AD  C6 06 31			mov		BYTE PTR [esi],'1'
+ 000000B0  EB 03			jmp		nextbit
+ 000000B2				elsezero:
+ 000000B2  C6 06 30			mov		BYTE PTR [esi],'0'
+ 000000B5				nextbit:
+ 000000B5  46				inc		esi
+ 000000B6  E2 F0			loop	forloop2
+ 000000B8				nextbyte:
+ 000000B8  8B CA			mov		ecx,edx
+ 000000BA  E2 D7			loop	forloop
+ 000000BC  5A				pop		edx
+ 000000BD  5B				pop		ebx
+ 000000BE  59				pop		ecx
+ 000000BF  5E				pop		esi
+ 000000C0  58				pop		eax
+ 000000C1  5D				pop		ebp
+ 000000C2  C3				ret
+ 000000C3			otobProc	ENDP
+
+ 000000C3			btohProc	PROC
+ 000000C3  55				push	ebp
+ 000000C4  8B EC			mov		ebp,esp
+ 000000C6  50				push	eax
+ 000000C7  56				push	esi
+ 000000C8  53				push	ebx
+ 000000C9  8B 45 08			mov		eax,[ebp+8]
+ 000000CC  8B 75 0C			mov		esi,[ebp+12]
+ 000000CF  80 3E 00			cmp		BYTE PTR [esi],0
+ 000000D2  74 22			je		quitproc
+ 000000D4  C7 00 00000000		mov		DWORD PTR [eax],0
+ 000000DA  BB 00000000			mov		ebx,0
+ 000000DF				whileloop:
+ 000000DF  80 3E 00			cmp		BYTE PTR [esi],0
+ 000000E2  74 12			je		quitproc
+ 000000E4  80 3E 30			cmp		BYTE PTR [esi],'0'
+ 000000E7  74 0A			je		nextbyte
+ 000000E9  8A 1E			mov		bl,BYTE PTR [esi]
+ 000000EB  80 EB 30			sub		bl,30h
+ 000000EE  01 18			add		DWORD PTR [eax],ebx
+ 000000F0  C1 20 04			shl		DWORD PTR [eax],4
+ 000000F3				nextbyte:
+ 000000F3  46				inc		esi
+ 000000F4  EB E9			jmp		whileloop
+ 000000F6				quitproc:
+ 000000F6  C1 28 04			shr		DWORD PTR [eax],4
+ 000000F9  5B				pop		ebx
+ 000000FA  5E				pop		esi
+ 000000FB  58				pop		eax
+ 000000FC  5D				pop		ebp
+ 000000FD  C3				ret
+ 000000FE			btohProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.27.29111.0	    11/09/20 04:19:43
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+btoh . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+otob . . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000077 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000FE Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000077 Public
+btohProc . . . . . . . . . . . .	P Near	 000000C3 _TEXT	Length= 0000003B Public
+  whileloop  . . . . . . . . . .	L Near	 000000DF _TEXT	
+  nextbyte . . . . . . . . . . .	L Near	 000000F3 _TEXT	
+  quitproc . . . . . . . . . . .	L Near	 000000F6 _TEXT	
+otobProc . . . . . . . . . . . .	P Near	 00000077 _TEXT	Length= 0000004C Public
+  forloop  . . . . . . . . . . .	L Near	 00000093 _TEXT	
+  forloop2 . . . . . . . . . . .	L Near	 000000A8 _TEXT	
+  elsezero . . . . . . . . . . .	L Near	 000000B2 _TEXT	
+  nextbit  . . . . . . . . . . .	L Near	 000000B5 _TEXT	
+  nextbyte . . . . . . . . . . .	L Near	 000000B8 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+answer . . . . . . . . . . . . .	Byte	 0000004E _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+inprompt . . . . . . . . . . . .	Byte	 00000023 _DATA	
+num  . . . . . . . . . . . . . .	DWord	 0000001F _DATA	
+result . . . . . . . . . . . . .	Byte	 00000042 _DATA	
+string . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

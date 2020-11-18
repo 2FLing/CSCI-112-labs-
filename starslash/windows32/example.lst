@@ -1,0 +1,126 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/15/20 16:37:54
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program -- adds 158 to number in memory
+				; Author:  MingkuanPang
+				; Date:    11/12/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+
+ 00000000  00000050 [		string		BYTE	80 DUP (?)
+	    00
+	   ]
+ 00000050 74 68 65 20 72	prompt		BYTE	"the result is:",0
+	   65 73 75 6C 74
+	   20 69 73 3A 00
+				starSlash	MACRO	string
+					lea		eax,string
+					push	eax
+					call	starSlashProc
+					add		esp,4
+					ENDM
+
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					starSlash	string
+					output	prompt,string
+ 00000028  B8 00000000			mov		eax,0
+ 0000002D  C3				ret
+ 0000002E			_MainProc    ENDP
+
+ 0000002E			starSlashProc	PROC
+ 0000002E  55				push	ebp
+ 0000002F  8B EC			mov		ebp,esp
+ 00000031  56				push	esi
+ 00000032  51				push	ecx
+ 00000033  9C				pushfd
+ 00000034  8B 75 08			mov		esi,[ebp+8]
+ 00000037  8B FE			mov		edi,esi
+ 00000039  83 C7 02			add		edi,2
+ 0000003C  B9 0000004E			mov		ecx,78
+ 00000041  C6 06 2A			mov		BYTE PTR [esi],'*'
+ 00000044  C6 46 01 2F			mov		BYTE PTR [esi+1],'/'
+ 00000048  FC				cld
+ 00000049				writestarslash:
+ 00000049  A4				movsb
+ 0000004A  E2 FD			loop	writestarslash
+ 0000004C  C6 06 00			mov		BYTE PTR [esi],0
+ 0000004F  9D				popfd
+ 00000050  59				pop		ecx
+ 00000051  5E				pop		esi
+ 00000052  5D				pop		ebp
+ 00000053  C3				ret
+ 00000054			starSlashProc	ENDP	
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/15/20 16:37:54
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+starSlash  . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000005F Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000054 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000002E Public
+starSlashProc  . . . . . . . . .	P Near	 0000002E _TEXT	Length= 00000026 Public
+  writestarslash . . . . . . . .	L Near	 00000049 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+prompt . . . . . . . . . . . . .	Byte	 00000050 _DATA	
+string . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors
