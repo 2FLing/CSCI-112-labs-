@@ -1,0 +1,137 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/19/20 19:20:30
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program
+				; This program will prmopts for and inputs 
+				; a string and a character and it will shortened
+				; the string by removing each occurence of the 
+				; character.
+				; Author:  MingkuanPang
+				; Date:    11/19/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+ 00000000 54 68 65 20 6D	outLbl	BYTE	"The modified string is",0
+	   6F 64 69 66 69
+	   65 64 20 73 74
+	   72 69 6E 67 20
+	   69 73 00
+ 00000017 41 42 43 44 45	string	BYTE	"ABCDEFGHIJ",0
+	   46 47 48 49 4A
+	   00
+
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+				; setup code 1
+					;lea		esi,string
+					;lea		edi,string+5
+					;cld
+					;movsb
+					;movsb
+					;movsb
+					;movsb
+					;output	outLbl,string	;The output will be ABCDEABCDJ
+
+				; setup code 2
+					;lea		esi,string
+					;lea		edi,string+2
+					;cld
+					;movsb
+					;movsb
+					;movsb
+					;movsb
+					;output	outLbl,string	;The output will be ABABABGHIJ
+
+				;setup code 3
+					;lea		esi,string+9
+					;lea		edi,string+4
+					;std
+					;movsb
+					;movsb
+					;movsb
+					;movsb
+					;output	outLbl,string	;The output will be AGHIJFGHIJ
+
+				;setup code 4
+ 00000000  8D 35 00000020 R		lea		esi,string+9
+ 00000006  8D 3D 0000001E R		lea		edi,string+7
+ 0000000C  FD				std
+ 0000000D  A4				movsb
+ 0000000E  A4				movsb
+ 0000000F  A4				movsb
+ 00000010  A4				movsb
+					output	outLbl,string	;The output will be ABCDIJIJIJ
+
+ 0000002A  B8 00000000			mov		eax,0
+ 0000002F  C3				ret
+ 00000030			_MainProc    ENDP
+
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/19/20 19:20:30
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000022 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000030 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000030 Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+outLbl . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+string . . . . . . . . . . . . .	Byte	 00000017 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

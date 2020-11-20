@@ -1,11 +1,14 @@
-Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/18/20 12:53:33
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/19/20 18:50:28
 example.asm						     Page 1 - 1
 
 
 				; Example assembly language program
-				; This program will 
+				; This program will prmopts for and inputs 
+				; a string and a character and it will shortened
+				; the string by removing each occurence of the 
+				; character.
 				; Author:  MingkuanPang
-				; Date:    11/17/2020    
+				; Date:    11/19/2020    
 
 				.586
 				.MODEL FLAT
@@ -17,40 +20,38 @@ example.asm						     Page 1 - 1
 				.STACK  4096            ; reserve 4096-byte stack
 
  00000000			.DATA	; reserve storage for data
- 00000000  00000050 [		firstName	BYTE	80	DUP (?)
+ 00000000  00000050 [		string	BYTE	80	DUP (?)
 	    00
 	   ]
- 00000050  00000050 [		lastName	BYTE	80	DUP (?)
+ 00000050  00000050 [		wrold	BYTE	80	DUP (?)
 	    00
 	   ]
- 000000A0  00000050 [		sbName		BYTE	80  DUP (?)
-	    00
-	   ]
- 000000F0 00000000		firstNameLen	DWORD	?
- 000000F4 00000000		lastNameLen		DWORD	?
- 000000F8 00000000		nameLen			DWORD	?
- 000000FC 50 6C 65 61 73	inputPrompt		BYTE	"Please enter you name (lastName ,/' ' firstname):",0
+ 000000A0 68 65 6C 6C 6F	test2	BYTE	"hello"
+ 000000A5 68 6F 6C 6C 6F	test1	BYTE	"hollo"
+ 000000AA 50 6C 65 61 73	stringPrompt	BYTE	"Please enter a string:",0
 	   65 20 65 6E 74
-	   65 72 20 79 6F
-	   75 20 6E 61 6D
-	   65 20 28 6C 61
-	   73 74 4E 61 6D
-	   65 20 2C 2F 27
-	   20 27 20 66 69
-	   72 73 74 6E 61
-	   6D 65 29 3A 00
- 0000012E 54 68 65 20 72	resultLbl		BYTE	"The result will be: ",0
-	   65 73 75 6C 74
-	   20 77 69 6C 6C
-	   20 62 65 3A 20
+	   65 72 20 61 20
+	   73 74 72 69 6E
+	   67 3A 00
+ 000000C1 50 6C 65 61 73	charPrompt		BYTE	"Please enter the character that you want to remove",0
+	   65 20 65 6E 74
+	   65 72 20 74 68
+	   65 20 63 68 61
+	   72 61 63 74 65
+	   72 20 74 68 61
+	   74 20 79 6F 75
+	   20 77 61 6E 74
+	   20 74 6F 20 72
+	   65 6D 6F 76 65
 	   00
+ 000000F4 54 68 65 20 6E	resultLbl		BYTE	"The new string will be: ",0
+	   65 77 20 73 74
+	   72 69 6E 67 20
+	   77 69 6C 6C 20
+	   62 65 3A 20 00
 
-				fixName	MACRO	name
-					lea		eax,name
-					push	eax
-					call	fixNameProc
-					add		esp,4
-					ENDM
+
+
 				strLen	MACRO	string
 					lea		eax,string
 					push	eax
@@ -59,98 +60,35 @@ example.asm						     Page 1 - 1
 					ENDM
  00000000			.CODE       
  00000000			_MainProc    PROC
-					input	inputPrompt,sbName,80
-					strLen	sbName
- 0000002D  A3 000000F8 R		mov		nameLen,eax
-					fixName	sbName
-					output	resultLbl,sbName
- 0000005A  B8 00000000			mov		eax,0
- 0000005F  C3				ret
- 00000060			_MainProc    ENDP
+ 00000000  8D 35 000000A0 R		lea		esi,test2
+ 00000006  8D 3D 000000A5 R		lea		edi,test1
+ 0000000C  B9 00000001			mov		ecx,1
+ 00000011  FC				cld
+ 00000012  F2/ A6			repne	cmpsb
+ 00000014  B8 00000000			mov		eax,0
+ 00000019  C3				ret
+ 0000001A			_MainProc    ENDP
 
- 00000060			fixNameProc		PROC
- 00000060  55				push	ebp
- 00000061  8B EC			mov		ebp,esp
- 00000063  57				push	edi
- 00000064  56				push	esi
- 00000065  50				push	eax
- 00000066  53				push	ebx
- 00000067  51				push	ecx
- 00000068  8B 7D 08			mov		edi,[ebp+8]
- 0000006B  B0 2C			mov		al,','
- 0000006D  8B 0D 000000F8 R		mov		ecx,nameLen
- 00000073  FC				cld
- 00000074  F2/ AE			repne	scasb
- 00000076  83 F9 00			cmp		ecx,0
- 00000079  75 0D			jnz		getLenOffirstNlast
- 0000007B  8B 7D 08			mov		edi,[ebp+8]
- 0000007E  B0 20			mov		al,' '
- 00000080  8B 0D 000000F8 R		mov		ecx,nameLen
- 00000086  F2/ AE			repne	scasb
- 00000088				getLenOffirstNlast:
- 00000088  41				inc		ecx
- 00000089  A1 000000F8 R		mov		eax,nameLen
- 0000008E  2B C1			sub		eax,ecx
- 00000090  A3 000000F4 R		mov		lastNameLen,eax
- 00000095  40				inc		eax
- 00000096  8B 1D 000000F8 R		mov		ebx,nameLen
- 0000009C  2B D8			sub		ebx,eax
- 0000009E  89 1D 000000F0 R		mov		firstNameLen,ebx
-					
- 000000A4				getLastName:
- 000000A4  8D 3D 00000050 R		lea		edi,lastName
- 000000AA  8B 75 08			mov		esi,[ebp+8]
- 000000AD  8B 0D 000000F4 R		mov		ecx,lastNameLen
- 000000B3  FC				cld
- 000000B4  F3/ A4			rep		movsb
 
- 000000B6				getFirstName:
- 000000B6  46				inc		esi
- 000000B7  8D 3D 00000000 R		lea		edi,firstName
- 000000BD  8B 0D 000000F0 R		mov		ecx,firstNameLen
- 000000C3  FC				cld
- 000000C4  F3/ A4			rep		movsb
-
- 000000C6				fix:
- 000000C6  8B 7D 08			mov		edi,[ebp+8]
- 000000C9  8D 35 00000000 R		lea		esi,firstName
- 000000CF  8B 0D 000000F0 R		mov		ecx,firstNameLen
- 000000D5  FC				cld
- 000000D6  F3/ A4			rep		movsb	
- 000000D8  C6 07 20			mov		BYTE PTR [edi],' '
- 000000DB  47				inc		edi
- 000000DC  8D 35 00000050 R		lea		esi,lastName
- 000000E2  8B 0D 000000F4 R		mov		ecx,lastNameLen
- 000000E8  FC				cld
- 000000E9  F3/ A4			rep		movsb
- 000000EB  59				pop		ecx
- 000000EC  5B				pop		ebx
- 000000ED  58				pop		eax
- 000000EE  5E				pop		esi
- 000000EF  5F				pop		edi
- 000000F0  5D				pop		ebp
- 000000F1  C3				ret
- 000000F2			fixNameProc		ENDP
-
- 000000F2			strLenProc	PROC
- 000000F2  55				push	ebp
- 000000F3  8B EC			mov		ebp,esp
- 000000F5  53				push	ebx
- 000000F6  8B 5D 08			mov		ebx,[ebp+8]
- 000000F9  B8 00000000			mov		eax,0
- 000000FE				countbytes:
- 000000FE  80 3B 00			cmp		BYTE PTR [ebx],0
- 00000101  74 04			je		endcount
- 00000103  40				inc		eax
- 00000104  43				inc		ebx
- 00000105  EB F7			jmp		countbytes
- 00000107				endcount:
- 00000107  5B				pop		ebx
- 00000108  5D				pop		ebp
- 00000109  C3				ret
- 0000010A			strlenProc	ENDP
+ 0000001A			strLenProc	PROC
+ 0000001A  55				push	ebp
+ 0000001B  8B EC			mov		ebp,esp
+ 0000001D  53				push	ebx
+ 0000001E  8B 5D 08			mov		ebx,[ebp+8]
+ 00000021  B8 00000000			mov		eax,0
+ 00000026				countbytes:
+ 00000026  80 3B 00			cmp		BYTE PTR [ebx],0
+ 00000029  74 04			je		endcount
+ 0000002B  40				inc		eax
+ 0000002C  43				inc		ebx
+ 0000002D  EB F7			jmp		countbytes
+ 0000002F				endcount:
+ 0000002F  5B				pop		ebx
+ 00000030  5D				pop		ebp
+ 00000031  C3				ret
+ 00000032			strlenProc	ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/18/20 12:53:33
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/19/20 18:50:28
 example.asm						     Symbols 2 - 1
 
 
@@ -163,7 +101,6 @@ Macros:
 atod . . . . . . . . . . . . . .	Proc
 atow . . . . . . . . . . . . . .	Proc
 dtoa . . . . . . . . . . . . . .	Proc
-fixName  . . . . . . . . . . . .	Proc
 input  . . . . . . . . . . . . .	Proc
 output . . . . . . . . . . . . .	Proc
 strLen . . . . . . . . . . . . .	Proc
@@ -176,23 +113,18 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000143 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 0000010A Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000010D Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000032 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000060 Public
-fixNameProc  . . . . . . . . . .	P Near	 00000060 _TEXT	Length= 00000092 Public
-  getLenOffirstNlast . . . . . .	L Near	 00000088 _TEXT	
-  getLastName  . . . . . . . . .	L Near	 000000A4 _TEXT	
-  getFirstName . . . . . . . . .	L Near	 000000B6 _TEXT	
-  fix  . . . . . . . . . . . . .	L Near	 000000C6 _TEXT	
-strLenProc . . . . . . . . . . .	P Near	 000000F2 _TEXT	Length= 00000018 Public
-  countbytes . . . . . . . . . .	L Near	 000000FE _TEXT	
-  endcount . . . . . . . . . . .	L Near	 00000107 _TEXT	
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000001A Public
+strLenProc . . . . . . . . . . .	P Near	 0000001A _TEXT	Length= 00000018 Public
+  countbytes . . . . . . . . . .	L Near	 00000026 _TEXT	
+  endcount . . . . . . . . . . .	L Near	 0000002F _TEXT	
 
 
 Symbols:
@@ -212,15 +144,14 @@ _getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
 _showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
 atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+charPrompt . . . . . . . . . . .	Byte	 000000C1 _DATA	
 dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-firstNameLen . . . . . . . . . .	DWord	 000000F0 _DATA	
-firstName  . . . . . . . . . . .	Byte	 00000000 _DATA	
-inputPrompt  . . . . . . . . . .	Byte	 000000FC _DATA	
-lastNameLen  . . . . . . . . . .	DWord	 000000F4 _DATA	
-lastName . . . . . . . . . . . .	Byte	 00000050 _DATA	
-nameLen  . . . . . . . . . . . .	DWord	 000000F8 _DATA	
-resultLbl  . . . . . . . . . . .	Byte	 0000012E _DATA	
-sbName . . . . . . . . . . . . .	Byte	 000000A0 _DATA	
+resultLbl  . . . . . . . . . . .	Byte	 000000F4 _DATA	
+stringPrompt . . . . . . . . . .	Byte	 000000AA _DATA	
+string . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+test1  . . . . . . . . . . . . .	Byte	 000000A5 _DATA	
+test2  . . . . . . . . . . . . .	Byte	 000000A0 _DATA	
+wrold  . . . . . . . . . . . . .	Byte	 00000050 _DATA	
 wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 
 	   0 Warnings
