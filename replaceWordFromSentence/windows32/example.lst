@@ -1,0 +1,288 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/21/20 18:18:05
+example.asm						     Page 1 - 1
+
+
+				; Example assembly language program
+				; This program will prmopts for and inputs 
+				; a sentence and a word and it will shortened
+				; the sentence by removing each occurence of the 
+				; word.
+				; Author:  MingkuanPang
+				; Date:    11/21/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+
+ 00000000			.DATA	; reserve storage for data
+ 00000000  00000050 [		sentence		BYTE	80	DUP (?)
+	    00
+	   ]
+ 00000050  00000050 [		oldWord			BYTE	80	DUP (?)
+	    00
+	   ]
+ 000000A0  00000050 [		newWord			BYTE	80  DUP (?)
+	    00
+	   ]
+ 000000F0  00000050 [		tempSentence	BYTE	80  DUP	(?)
+	    00
+	   ]
+ 00000140 00000000		oldWordLen		DWORD	?
+ 00000144 00000000		newWordLen		DWORD	?
+ 00000148 00000000		sentenceLen		DWORD	?
+ 0000014C 50 6C 65 61 73	sentencePrompt	BYTE	"Please enter a sentence:",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   73 65 6E 74 65
+	   6E 63 65 3A 00
+ 00000165 50 6C 65 61 73	wordPrompt		BYTE	"Please enter a word that you want to replace",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   77 6F 72 64 20
+	   74 68 61 74 20
+	   79 6F 75 20 77
+	   61 6E 74 20 74
+	   6F 20 72 65 70
+	   6C 61 63 65 00
+ 00000192 57 68 61 74 20	newWordPrompt	BYTE	"What word you want it to be replaced with?",0
+	   77 6F 72 64 20
+	   79 6F 75 20 77
+	   61 6E 74 20 69
+	   74 20 74 6F 20
+	   62 65 20 72 65
+	   70 6C 61 63 65
+	   64 20 77 69 74
+	   68 3F 00
+ 000001BD 54 68 65 20 6E	resultLbl		BYTE	"The new sentence will be: ",0
+	   65 77 20 73 65
+	   6E 74 65 6E 63
+	   65 20 77 69 6C
+	   6C 20 62 65 3A
+	   20 00
+
+				replaceWord	 MACRO	sentence,oldWord,newWord
+					lea		eax,newWord
+					push	eax
+					lea		eax,oldWord
+					push	eax
+					lea		eax,sentence
+					push	eax
+					call	replaceWordProc
+					add		esp,12
+					ENDM
+
+				strLen	MACRO	string
+					lea		eax,string
+					push	eax
+					call	strLenProc
+					add		esp,4
+					ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					input		sentencePrompt,sentence,80
+					input		wordPrompt,oldWord,80
+					input		newWordPrompt,newWord,80
+					strLen		sentence
+ 00000069  A3 00000148 R		mov			sentenceLen,eax
+					strLen		oldWord
+ 0000007D  A3 00000140 R		mov			oldWordLen,eax
+					strLen		newWord
+ 00000091  A3 00000144 R		mov			newWordLen,eax
+					replaceWord	sentence,oldWord,newWord
+					output		resultLbl,sentence
+ 000000CC  B8 00000000			mov			eax,0
+ 000000D1  C3				ret
+ 000000D2			_MainProc    ENDP
+
+ 000000D2			replaceWordProc		PROC
+ 000000D2  55				push	ebp
+ 000000D3  8B EC			mov		ebp,esp
+ 000000D5  57				push	edi
+ 000000D6  56				push	esi
+ 000000D7  51				push	ecx
+ 000000D8  50				push	eax
+ 000000D9  53				push	ebx
+ 000000DA  52				push	edx
+ 000000DB  8B 7D 08			mov		edi,[ebp+8]
+ 000000DE  8B 75 0C			mov		esi,[ebp+12]
+ 000000E1  BB 00000000			mov		ebx,0
+ 000000E6  BA 00000000			mov		edx,0
+
+ 000000EB				checkSpace:
+ 000000EB  66| B8 0020			mov		ax,' '
+ 000000EF  B9 00000001			mov		ecx,1
+ 000000F4  FC				cld
+ 000000F5  F2/ AE			repne	scasb
+ 000000F7  74 08			jz		checkWord
+
+ 000000F9				isNotSpace:
+ 000000F9  80 3F 00			cmp		BYTE PTR [edi],0
+ 000000FC  74 03			jz		checkWord
+ 000000FE  42				inc		edx
+ 000000FF  EB EA			jmp		checkSpace
+
+ 00000101				checkWord:
+ 00000101  83 FA 00			cmp		edx,0
+ 00000104  0F 84 00000080		jz		finishReplacing
+ 0000010A  8B 75 0C			mov		esi,[ebp+12]
+ 0000010D  2B FA			sub		edi,edx
+ 0000010F  4F				dec		edi
+ 00000110  8B 0D 00000140 R		mov		ecx,oldWordLen
+ 00000116  FC				cld
+ 00000117  F3/ A6			repe	cmpsb
+ 00000119  74 33			jz		rePlace
+
+ 0000011B				notReplace:
+ 0000011B  8D 3D 000000F0 R		lea		edi,tempSentence
+					strLen	tempSentence
+ 00000130  03 F8			add		edi,eax
+ 00000132  8B 75 08			mov		esi,[ebp+8]
+ 00000135  03 F3			add		esi,ebx
+ 00000137  8B CA			mov		ecx,edx
+ 00000139  FC				cld	
+ 0000013A  F3/ A4			rep		movsb
+ 0000013C  C6 07 20			mov		BYTE PTR [edi],' '
+ 0000013F  43				inc		ebx
+ 00000140  03 DA			add		ebx,edx
+ 00000142  BA 00000000			mov		edx,0
+ 00000147  8B 7D 08			mov		edi,[ebp+8]
+ 0000014A  03 FB			add		edi,ebx
+ 0000014C  EB 9D			jmp		checkSpace
+
+ 0000014E				rePlace:
+ 0000014E  8D 3D 000000F0 R		lea		edi,tempSentence
+					strLen	tempSentence
+ 00000163  03 F8			add		edi,eax
+ 00000165  8B 75 10			mov		esi,[ebp+16]
+ 00000168  8B 0D 00000144 R		mov		ecx,newWordLen
+ 0000016E  FC				cld
+ 0000016F  F3/ A4			rep		movsb
+ 00000171  03 1D 00000140 R		add		ebx,oldWordLen
+ 00000177  C6 07 20			mov		BYTE PTR [edi],' '
+ 0000017A  43				inc		ebx
+ 0000017B  BA 00000000			mov		edx,0
+ 00000180  8B 7D 08			mov		edi,[ebp+8]
+ 00000183  03 FB			add		edi,ebx
+ 00000185  E9 FFFFFF61			jmp		checkSpace
+
+ 0000018A				finishReplacing:
+					strLen	tempSentence
+ 00000199  8B 7D 08			mov		edi,[ebp+8]
+ 0000019C  8D 35 000000F0 R		lea		esi,tempSentence
+ 000001A2  8B C8			mov		ecx,eax
+ 000001A4  FC				cld
+ 000001A5  F3/ A4			rep		movsb
+ 000001A7  C6 07 00			mov		BYTE PTR [edi],0
+ 000001AA  5A				pop		edx
+ 000001AB  5B				pop		ebx
+ 000001AC  58				pop		eax
+ 000001AD  59				pop		ecx
+ 000001AE  5E				pop		esi
+ 000001AF  5F				pop		edi
+ 000001B0  5D				pop		ebp
+ 000001B1  C3				ret
+ 000001B2			replaceWordProc		ENDP
+
+ 000001B2			strLenProc	PROC
+ 000001B2  55				push	ebp
+ 000001B3  8B EC			mov		ebp,esp
+ 000001B5  53				push	ebx
+ 000001B6  8B 5D 08			mov		ebx,[ebp+8]
+ 000001B9  B8 00000000			mov		eax,0
+ 000001BE				countbytes:
+ 000001BE  80 3B 00			cmp		BYTE PTR [ebx],0
+ 000001C1  74 04			je		endcount
+ 000001C3  40				inc		eax
+ 000001C4  43				inc		ebx
+ 000001C5  EB F7			jmp		countbytes
+ 000001C7				endcount:
+ 000001C7  5B				pop		ebx
+ 000001C8  5D				pop		ebp
+ 000001C9  C3				ret
+ 000001CA			strlenProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/21/20 18:18:05
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+replaceWord  . . . . . . . . . .	Proc
+strLen . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 000001D8 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000001CA Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000000D2 Public
+replaceWordProc  . . . . . . . .	P Near	 000000D2 _TEXT	Length= 000000E0 Public
+  checkSpace . . . . . . . . . .	L Near	 000000EB _TEXT	
+  isNotSpace . . . . . . . . . .	L Near	 000000F9 _TEXT	
+  checkWord  . . . . . . . . . .	L Near	 00000101 _TEXT	
+  notReplace . . . . . . . . . .	L Near	 0000011B _TEXT	
+  rePlace  . . . . . . . . . . .	L Near	 0000014E _TEXT	
+  finishReplacing  . . . . . . .	L Near	 0000018A _TEXT	
+strLenProc . . . . . . . . . . .	P Near	 000001B2 _TEXT	Length= 00000018 Public
+  countbytes . . . . . . . . . .	L Near	 000001BE _TEXT	
+  endcount . . . . . . . . . . .	L Near	 000001C7 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+newWordLen . . . . . . . . . . .	DWord	 00000144 _DATA	
+newWordPrompt  . . . . . . . . .	Byte	 00000192 _DATA	
+newWord  . . . . . . . . . . . .	Byte	 000000A0 _DATA	
+oldWordLen . . . . . . . . . . .	DWord	 00000140 _DATA	
+oldWord  . . . . . . . . . . . .	Byte	 00000050 _DATA	
+resultLbl  . . . . . . . . . . .	Byte	 000001BD _DATA	
+sentenceLen  . . . . . . . . . .	DWord	 00000148 _DATA	
+sentencePrompt . . . . . . . . .	Byte	 0000014C _DATA	
+sentence . . . . . . . . . . . .	Byte	 00000000 _DATA	
+tempSentence . . . . . . . . . .	Byte	 000000F0 _DATA	
+wordPrompt . . . . . . . . . . .	Byte	 00000165 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors
