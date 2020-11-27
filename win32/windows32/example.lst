@@ -1,13 +1,12 @@
-Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/21/20 19:34:00
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/27/20 01:04:15
 example.asm						     Page 1 - 1
 
 
-				; Example assembly language program
-				; This program will prompts for and inputs
-				; a string and a character. Finally, it will return
-				; the number of occurrences of the character in a string.
+				;dtoaProc(source,dest)
+				;Convert double (source) to string of 11 characters at destination
+				;address
 				; Author:  MingkuanPang
-				; Date:    11/21/2020    
+				; Date:    11/22/2020    
 
 				.586
 				.MODEL FLAT
@@ -17,143 +16,15 @@ example.asm						     Page 1 - 1
 			      C .LIST        ; begin listing
 			      C 
 				.STACK  4096            ; reserve 4096-byte stack
-
  00000000			.DATA	; reserve storage for data
- 00000000  00000050 [		firstString		BYTE	80 DUP (?)
-	    00
-	   ]
- 00000050  00000050 [		secondString	BYTE	80 DUP (?)
-	    00
-	   ]
- 000000A0  0000000B [		Position		BYTE	11 DUP (?)
-	    00
-	   ]
- 000000AB 50 6C 65 61 73	firstPrompt		BYTE	"Please enter first string",0
-	   65 20 65 6E 74
-	   65 72 20 66 69
-	   72 73 74 20 73
-	   74 72 69 6E 67
-	   00
- 000000C5 50 6C 65 61 73	secondPrompt	BYTE	"Please enter second string",0
-	   65 20 65 6E 74
-	   65 72 20 73 65
-	   63 6F 6E 64 20
-	   73 74 72 69 6E
-	   67 00
- 000000E0 54 68 65 20 72	resultLbl		BYTE	"The result is: ",0
-	   65 73 75 6C 74
-	   20 69 73 3A 20
-	   00
- 000000F0 54 68 65 20 64	PositionLbl		BYTE	"The differences appears in these positions: "
-	   69 66 66 65 72
-	   65 6E 63 65 73
-	   20 61 70 70 65
-	   61 72 73 20 69
-	   6E 20 74 68 65
-	   73 65 20 70 6F
-	   73 69 74 69 6F
-	   6E 73 3A 20
- 0000011C  00000050 [		Positions		BYTE	80 DUP (?)
-	    00
-	   ]
- 0000016C 69 6E 20 74 68	PositionLbl2	BYTE	"in the first string.",0
-	   65 20 66 69 72
-	   73 74 20 73 74
-	   72 69 6E 67 2E
-	   00
-
-				countDifferences MACRO	stirng1,string2
-					lea		eax,string2
-					push	eax
-					lea		eax,stirng1
-					push	eax
-					call	countDifferencesProc
-					add		esp,8
-					ENDM
-
-				strLen	MACRO	string
-					lea		eax,string
-					push	eax
-					call	strLenProc
-					add		esp,4
-					ENDM
+ 00000000 C26A0000		realNum		REAL4 -58.5
  00000000			.CODE       
  00000000			_MainProc    PROC
-					input				firstPrompt,firstString,80
-					input				secondPrompt,secondString,80
-					countDifferences	firstString,secondString
-					output				resultLbl,positionLbl
- 0000006B  B8 00000000			mov					eax,0
- 00000070  C3				ret
- 00000071			_MainProc    ENDP
-
- 00000071			countDifferencesProc PROC
- 00000071  55				push	ebp
- 00000072  8B EC			mov		ebp,esp
- 00000074  50				push	eax
- 00000075  51				push	ecx
- 00000076  53				push	ebx
- 00000077  56				push	esi
- 00000078  57				push	edi
- 00000079  8B 7D 08			mov		edi,[ebp+8]
- 0000007C  8B 75 0C			mov		esi,[ebp+12]
- 0000007F  B8 00000000			mov		eax,0
- 00000084  BB 00000000			mov		ebx,0
- 00000089				checkNull:
- 00000089  80 3F 00			cmp		BYTE PTR [edi],0
- 0000008C  74 29			jz		finishCounting
- 0000008E  80 3E 00			cmp		BYTE PTR [esi],0
- 00000091  74 24			jz		finishCounting
-
- 00000093				startCounting:
- 00000093  40				inc		eax
- 00000094  B9 00000001			mov		ecx,1
- 00000099  FC				cld
- 0000009A  F3/ A6			repe	cmpsb
- 0000009C  75 02			jnz		count
-
- 0000009E				skip:
- 0000009E  EB E9			jmp		checkNull
-
- 000000A0				count:
- 000000A0  83 C8 30			or		eax,30h
- 000000A3  88 83 0000011C R		mov		BYTE PTR [Positions+ebx],al
- 000000A9  43				inc		ebx
- 000000AA  C6 83 0000011C R		mov		BYTE PTR [Positions+ebx],' '
-	   20
- 000000B1  43				inc		ebx
- 000000B2  83 E8 30			sub		eax,30h
- 000000B5  EB D2			jmp		checkNull
-
- 000000B7				finishCounting:
- 000000B7  5F				pop		edi
- 000000B8  5E				pop		esi
- 000000B9  5B				pop		ebx
- 000000BA  59				pop		ecx
- 000000BB  58				pop		eax
- 000000BC  5D				pop		ebp
- 000000BD  C3				ret
- 000000BE			countDifferencesProc ENDP
-
- 000000BE			strLenProc	PROC
- 000000BE  55				push	ebp
- 000000BF  8B EC			mov		ebp,esp
- 000000C1  53				push	ebx
- 000000C2  8B 5D 08			mov		ebx,[ebp+8]
- 000000C5  B8 00000000			mov		eax,0
- 000000CA				countbytes:
- 000000CA  80 3B 00			cmp		BYTE PTR [ebx],0
- 000000CD  74 04			je		endcount
- 000000CF  40				inc		eax
- 000000D0  43				inc		ebx
- 000000D1  EB F7			jmp		countbytes
- 000000D3				endcount:
- 000000D3  5B				pop		ebx
- 000000D4  5D				pop		ebp
- 000000D5  C3				ret
- 000000D6			strlenProc	ENDP
+ 00000000  B8 00000000			mov			eax,0
+ 00000005  C3				ret
+ 00000006			_MainProc    ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/21/20 19:34:00
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/27/20 01:04:15
 example.asm						     Symbols 2 - 1
 
 
@@ -165,11 +36,9 @@ Macros:
 
 atod . . . . . . . . . . . . . .	Proc
 atow . . . . . . . . . . . . . .	Proc
-countDifferences . . . . . . . .	Proc
 dtoa . . . . . . . . . . . . . .	Proc
 input  . . . . . . . . . . . . .	Proc
 output . . . . . . . . . . . . .	Proc
-strLen . . . . . . . . . . . . .	Proc
 wtoa . . . . . . . . . . . . . .	Proc
 
 
@@ -179,24 +48,15 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000181 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 000000D6 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000004 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000006 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000071 Public
-countDifferencesProc . . . . . .	P Near	 00000071 _TEXT	Length= 0000004D Public
-  checkNull  . . . . . . . . . .	L Near	 00000089 _TEXT	
-  startCounting  . . . . . . . .	L Near	 00000093 _TEXT	
-  skip . . . . . . . . . . . . .	L Near	 0000009E _TEXT	
-  count  . . . . . . . . . . . .	L Near	 000000A0 _TEXT	
-  finishCounting . . . . . . . .	L Near	 000000B7 _TEXT	
-strLenProc . . . . . . . . . . .	P Near	 000000BE _TEXT	Length= 00000018 Public
-  countbytes . . . . . . . . . .	L Near	 000000CA _TEXT	
-  endcount . . . . . . . . . . .	L Near	 000000D3 _TEXT	
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000006 Public
 
 
 Symbols:
@@ -212,20 +72,12 @@ Symbols:
 @fardata?  . . . . . . . . . . .	Text   	 FLAT
 @fardata . . . . . . . . . . . .	Text   	 FLAT
 @stack . . . . . . . . . . . . .	Text   	 FLAT
-PositionLbl2 . . . . . . . . . .	Byte	 0000016C _DATA	
-PositionLbl  . . . . . . . . . .	Byte	 000000F0 _DATA	
-Positions  . . . . . . . . . . .	Byte	 0000011C _DATA	
-Position . . . . . . . . . . . .	Byte	 000000A0 _DATA	
 _getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
 _showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
 atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-firstPrompt  . . . . . . . . . .	Byte	 000000AB _DATA	
-firstString  . . . . . . . . . .	Byte	 00000000 _DATA	
-resultLbl  . . . . . . . . . . .	Byte	 000000E0 _DATA	
-secondPrompt . . . . . . . . . .	Byte	 000000C5 _DATA	
-secondString . . . . . . . . . .	Byte	 00000050 _DATA	
+realNum  . . . . . . . . . . . .	DWord	 00000000 _DATA	
 wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 
 	   0 Warnings
