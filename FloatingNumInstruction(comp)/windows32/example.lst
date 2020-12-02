@@ -1,0 +1,113 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/01/20 16:31:30
+example.asm						     Page 1 - 1
+
+
+				;compute roots of quadratic equation
+				; Author:  MingkuanPang
+				; Date:    11/29/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+ 00000000			.DATA	; reserve storage for data
+ 00000000 41100000		 fpTemp1	REAL4	9.0
+ 00000004 41400000		 fpTemp2	REAL4	12.0
+ 00000008 41B80000		 fpTemp3	REAL4	23.0
+ 0000000C 41C00000		 fpTemp4	REAL4	24.0
+ 00000010 420C0000		 fpTemp5	REAL4	35.0
+ 00000014 3F000000		 fpValue	REAL4	0.5
+ 00000018 00000006		 intValue	DWORD	6
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+ 00000000			InitializedST:
+ 00000000  9B DB E3			finit
+ 00000003  D9 05 00000010 R		fld		fpTemp5
+ 00000009  D9 05 0000000C R		fld		fpTemp4
+ 0000000F  D9 05 00000008 R		fld		fpTemp3
+ 00000015  D9 05 00000004 R		fld		fpTemp2
+ 0000001B  D9 05 00000000 R		fld		fpTemp1
+
+ 00000021			Instructions:
+					;fcom
+					;fcom	st(3)
+					;fcom	fpValue
+					;ficom	intValue
+					;fcomp
+ 00000021  DE D9			fcompp
+ 00000023  9B DF E0			fstsw	ax
+ 00000026  9E				sahf
+ 00000027  B8 00000000			mov		eax,0
+ 0000002C  C3				ret
+ 0000002D			_MainProc    ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/01/20 16:31:30
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000001C Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000002D Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000002D Public
+  InitializedST  . . . . . . . .	L Near	 00000000 _TEXT	
+  Instructions . . . . . . . . .	L Near	 00000021 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+fpTemp1  . . . . . . . . . . . .	DWord	 00000000 _DATA	
+fpTemp2  . . . . . . . . . . . .	DWord	 00000004 _DATA	
+fpTemp3  . . . . . . . . . . . .	DWord	 00000008 _DATA	
+fpTemp4  . . . . . . . . . . . .	DWord	 0000000C _DATA	
+fpTemp5  . . . . . . . . . . . .	DWord	 00000010 _DATA	
+fpValue  . . . . . . . . . . . .	DWord	 00000014 _DATA	
+intValue . . . . . . . . . . . .	DWord	 00000018 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

@@ -1,0 +1,95 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/01/20 17:06:09
+example.asm						     Page 1 - 1
+
+
+				;This program will caculate the harmonic mean of real numbers x and y
+				; Author:  MingkuanPang
+				; Date:    12/1/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+ 00000000			.DATA	; reserve storage for data
+ 00000000 3F800000		x		REAL4	1.0
+ 00000004 40000000		y		REAL4	2.0
+ 00000008 00000000		hMean	REAL4	?
+ 0000000C 40000000		two		REAL4	2.0
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+ 00000000  D9 05 00000000 R		fld		x
+ 00000006  D8 0D 00000004 R		fmul	y
+ 0000000C  D8 0D 0000000C R		fmul	two
+ 00000012  D9 05 00000000 R		fld		x
+ 00000018  D8 05 00000004 R		fadd	y
+ 0000001E  DE F9			fdiv
+ 00000020  D9 1D 00000008 R		fstp	hMean
+ 00000026  B8 00000000			mov		eax,0
+ 0000002B  C3				ret
+ 0000002C			_MainProc    ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/01/20 17:06:09
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000010 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000002C Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000002C Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+hMean  . . . . . . . . . . . . .	DWord	 00000008 _DATA	
+two  . . . . . . . . . . . . . .	DWord	 0000000C _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+x  . . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+y  . . . . . . . . . . . . . . .	DWord	 00000004 _DATA	
+
+	   0 Warnings
+	   0 Errors

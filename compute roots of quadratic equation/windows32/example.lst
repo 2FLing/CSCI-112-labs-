@@ -1,0 +1,122 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/29/20 21:44:53
+example.asm						     Page 1 - 1
+
+
+				;compute roots of quadratic equation
+				; Author:  MingkuanPang
+				; Date:    11/29/2020    
+
+				.586
+				.MODEL FLAT
+				 INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+ 00000000			.DATA	; reserve storage for data
+ 00000000 40000000		aa		REAL4	2.0
+ 00000004 BF800000		bb		REAL4	-1.0
+ 00000008 C1700000		cc		REAL4	-15.0
+ 0000000C 00000000		discr	REAL4	?
+ 00000010 00000000		x1		REAL4	?
+ 00000014 00000000		x2		REAL4	?
+ 00000018 00000004		four	DWORD	4
+ 0000001C 00000002		two		DWORD	2
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+ 00000000  9B DB E3			finit
+ 00000003  D9 05 00000004 R		fld		bb		;put b in ST(0)
+ 00000009  DE C9			fmul			;b*b
+ 0000000B  DB 05 00000018 R		fild	four	;put 4 in ST(0)
+ 00000011  D8 0D 00000000 R		fmul	aa		;4*a
+ 00000017  D8 0D 00000008 R		fmul	cc		;4*a*c
+ 0000001D  DE E9			fsub			;b*b-4*a*c
+ 0000001F  D9 EE			fldz			;set ST(0) 0
+ 00000021  D9 C9			fxch			;set b*b-4*a*c to ST(0)
+ 00000023  D8 D1			fcom	st(1)	;b*b-4*a*c<0?
+ 00000025  9B DF E0			fstsw	ax		;copy codition code to ax
+ 00000028  9E				sahf			;shift condition code bits to flags
+ 00000029  72 36			jnae	endGE
+ 0000002B  D9 FA			fsqrt			;sqrt(b*b-4*a*c)
+ 0000002D  DD D1			fst		st(1)	;copy to ST(1)
+ 0000002F  D8 25 00000004 R		fsub	bb		;-b+sqrt(b*b-4*a*c)
+ 00000035  D8 35 00000000 R		fdiv	aa		;-b+sqrt(b*b-4*a*c)/a
+ 0000003B  DA 35 0000001C R		fidiv	two		;-b+sqrt(b*b-4*a*c)/2a
+ 00000041  D9 1D 00000010 R		fstp	x1		;x1=-b+sqrt(b*b-4*a*c)/2a
+ 00000047  D9 E0			fchs			;-sqrt(b*b-4*a*c)		
+ 00000049  D8 25 00000004 R		fsub	bb		;-b-sqrt(b*b-4*a*c)
+ 0000004F  D8 35 00000000 R		fdiv	aa		;-b-sqrt(b*b-4*a*c)/a
+ 00000055  DA 35 0000001C R		fidiv	two		;-b-sqrt(b*b-4*a*c)/2a
+ 0000005B  D9 1D 00000014 R		fstp	x2		;save and pop stack
+ 00000061				endGE:
+ 00000061  B8 00000000			mov		eax,0
+ 00000066  C3				ret
+ 00000067			_MainProc    ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    11/29/20 21:44:53
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000020 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000067 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000067 Public
+  endGE  . . . . . . . . . . . .	L Near	 00000061 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+aa . . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+bb . . . . . . . . . . . . . . .	DWord	 00000004 _DATA	
+cc . . . . . . . . . . . . . . .	DWord	 00000008 _DATA	
+discr  . . . . . . . . . . . . .	DWord	 0000000C _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+four . . . . . . . . . . . . . .	DWord	 00000018 _DATA	
+two  . . . . . . . . . . . . . .	DWord	 0000001C _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+x1 . . . . . . . . . . . . . . .	DWord	 00000010 _DATA	
+x2 . . . . . . . . . . . . . . .	DWord	 00000014 _DATA	
+
+	   0 Warnings
+	   0 Errors
