@@ -1,0 +1,161 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/03/20 19:56:52
+example.asm						     Page 1 - 1
+
+
+				; ASCII	to floating point code
+				; Author:  MingkuanPang
+				; Date:    12/3/2020    
+
+				.586
+				.MODEL FLAT
+				.STACK  4096            ; reserve 4096-byte stack
+ 00000000			.DATA	; reserve storage for data
+ 00000000 2D 37 38 2E 33	source	BYTE		"-78.375",0
+	   37 35 00
+ 00000008 00000000		result	REAL4	?
+
+				atof	MACRO  fNum
+					push	eax
+					lea		eax,fNum
+					push	eax
+					call	atofProc
+					add		esp,4
+					pop		eax
+					ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					atof	source
+ 00000000  50		     1		push	eax
+ 00000001  8D 05 00000000 R  1		lea		eax,source
+ 00000007  50		     1		push	eax
+ 00000008  E8 00000010	     1		call	atofProc
+ 0000000D  83 C4 04	     1		add		esp,4
+ 00000010  58		     1		pop		eax
+ 00000011  D9 1D 00000008 R		fstp	result
+ 00000017  B8 00000000			mov		eax,0
+ 0000001C  C3				ret
+ 0000001D			_MainProc    ENDP
+
+				;[ebp-4]	minus? 0 false -1 true
+				;[ebp-8]	point? 0 false -1 true
+				;[ebp-12]	ten 10
+				;[ebp-16]	digit
+ 0000001D			atofProc	PROC
+ 0000001D  55				push	ebp
+ 0000001E  8B EC			mov		ebp,esp
+ 00000020  50				push	eax
+ 00000021  56				push	esi
+ 00000022  83 EC 10			sub		esp,16
+ 00000025  C7 45 FC			mov		DWORD PTR [ebp-4],0
+	   00000000
+ 0000002C  C7 45 F8			mov		DWORD PTR [ebp-8],0
+	   00000000
+ 00000033  C7 45 F4			mov		DWORD PTR [ebp-12],10
+	   0000000A
+ 0000003A  8B 75 08			mov		esi,[ebp+8]
+ 0000003D  D9 E8			fld1
+ 0000003F  D9 EE			fldz
+						
+ 00000041				CheckSign:
+ 00000041  8A 06			mov		al,BYTE PTR [esi]
+ 00000043  3C 2D			cmp		al,'-'
+ 00000045  75 0A			jne		CheckDigit
+ 00000047  C7 45 FC			mov		DWORD PTR [ebp-4],-1
+	   FFFFFFFF
+ 0000004E  46				inc		esi
+ 0000004F  8A 06			mov		al,BYTE PTR [esi]
+
+ 00000051				CheckDigit:
+ 00000051  3C 30			cmp		al,'0'
+ 00000053  7C 30			jl		endCheck
+ 00000055  3C 39			cmp		al,'9'
+ 00000057  7F 2C			jg		endCheck
+ 00000059  83 E0 0F			and		eax,0000000fh
+ 0000005C  89 45 F0			mov		DWORD PTR [ebp-16],eax
+ 0000005F  DA 4D F4			fimul	DWORD PTR [ebp-12]
+ 00000062  DA 45 F0			fiadd	DWORD PTR [ebp-16]
+ 00000065  83 7D F8 FF			cmp		DWORD PTR [ebp-8],-1
+ 00000069  75 07			jne		nextDigit
+ 0000006B  D9 C9			fxch
+ 0000006D  DA 4D F4			fimul	DWORD PTR [ebp-12]
+ 00000070  D9 C9			fxch
+
+ 00000072				nextDigit:
+ 00000072  46				inc		esi
+ 00000073  8A 06			mov		al,BYTE PTR [esi]
+ 00000075  3C 2E			cmp		al,'.'
+ 00000077  75 D8			jne		CheckDigit
+ 00000079  C7 45 F8			mov		DWORD PTR [ebp-8],-1
+	   FFFFFFFF
+ 00000080  46				inc		esi
+ 00000081  8A 06			mov		al,BYTE PTR [esi]
+ 00000083  EB CC			jmp		CheckDigit
+
+ 00000085				endCheck:
+ 00000085  DE F1			fdivr
+ 00000087  83 7D FC FF			cmp		DWORD PTR [ebp-4],-1
+ 0000008B  75 02			jne		exit
+ 0000008D  D9 E0			fchs
+
+ 0000008F				exit:
+ 0000008F  5E				pop		esi
+ 00000090  58				pop		eax
+ 00000091  8B E5			mov		esp,ebp
+ 00000093  5D				pop		ebp
+ 00000094  C3				ret
+ 00000095			atofProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/03/20 19:56:52
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atof . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 0000000C Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000095 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000001D Public
+atofProc . . . . . . . . . . . .	P Near	 0000001D _TEXT	Length= 00000078 Public
+  CheckSign  . . . . . . . . . .	L Near	 00000041 _TEXT	
+  CheckDigit . . . . . . . . . .	L Near	 00000051 _TEXT	
+  nextDigit  . . . . . . . . . .	L Near	 00000072 _TEXT	
+  endCheck . . . . . . . . . . .	L Near	 00000085 _TEXT	
+  exit . . . . . . . . . . . . .	L Near	 0000008F _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+result . . . . . . . . . . . . .	DWord	 00000008 _DATA	
+source . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+
+	   0 Warnings
+	   0 Errors
