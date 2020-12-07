@@ -1,0 +1,385 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/06/20 19:13:51
+example.asm						     Page 1 - 1
+
+
+				;This program prompt user for a number
+				;and then it will display the cube root
+				;of this number
+				; Author:  MingkuanPang
+				; Date:    12/6/2020    
+
+				.586
+				.MODEL FLAT
+				INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+ 00000000			.DATA	; reserve storage for data
+ 00000000  00000050 [		string BYTE	80 DUP (?)
+	    00
+	   ]
+ 00000050 3F800000		one		REAL4	1.0
+ 00000054 36A7C5AC		round	REAL4	0.000005
+ 00000058 41200000		ten		REAL4	10.0
+ 0000005C 00000000		x		REAL4   ?
+ 00000060 40000000		two		REAL4	2.0
+ 00000064 40400000		three	REAL4	3.0
+ 00000068 3F800000		root	REAL4	1.0
+ 0000006C 00000000		oldRoot	REAL4	?
+ 00000070 3A83126F		smallValue REAL4	0.001
+ 00000074 00000000		digit	DWORD	?
+ 00000078 50 6C 65 61 73	inPrompt BYTE	"Please enter a number: ",0
+	   65 20 65 6E 74
+	   65 72 20 61 20
+	   6E 75 6D 62 65
+	   72 3A 20 00
+ 00000090 54 68 65 20 72	resLbl	BYTE	"The result will be: ",0
+	   65 73 75 6C 74
+	   20 77 69 6C 6C
+	   20 62 65 3A 20
+	   00
+
+					
+				ftoa	MACRO	fnum,str
+					push	eax
+					lea		eax,str
+					push	eax
+					push	fnum
+					call	ftoaProc
+					add		esp,8
+					pop		eax
+					ENDM
+
+				atof	MACRO  fNum
+					push	eax
+					lea		eax,fNum
+					push	eax
+					call	atofProc
+					add		esp,4
+					pop		eax
+					ENDM
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					input	inprompt,string,80
+					atof	string
+ 0000002F  D9 1D 0000005C R		fstp	x
+
+ 00000035				calRoot:
+ 00000035  9B DB E3			finit
+ 00000038  D9 05 00000068 R		fld		root
+ 0000003E  D9 15 0000006C R		fst		oldRoot
+ 00000044  D9 C0			fld		st
+ 00000046  DE C9			fmul	;root*root
+ 00000048  D9 05 0000005C R		fld		x
+ 0000004E  DE F1			fdivr	;x/(root*root)
+ 00000050  D9 05 00000068 R		fld		root
+ 00000056  D9 05 00000060 R		fld		two
+ 0000005C  DE C9			fmul	;2*root
+ 0000005E  DE C1			fadd	;2*root+x/(root*root)
+ 00000060  D9 05 00000064 R		fld		three
+ 00000066  DE F9			fdiv	;2*root+x/(root*root)/3
+ 00000068  D9 15 00000068 R		fst		root
+ 0000006E  D9 C0			fld		st
+ 00000070  D9 C0			fld		st
+ 00000072  DE C9			fmul	;root*root
+ 00000074  DE C9			fmul	;root*root*root
+ 00000076  D9 05 0000005C R		fld		x
+ 0000007C  DE E9			fsub	;x-root*root*root
+ 0000007E  D9 E1			fabs	;|x-root*root*root|
+ 00000080  D8 15 00000070 R		fcom	smallValue
+ 00000086  9B DF E0			fstsw	ax
+ 00000089  9E				sahf
+ 0000008A  77 A9			jnbe	calRoot
+					ftoa		root,string
+					output		resLbl,string
+ 000000BC  B8 00000000			mov			eax,0
+ 000000C1  C3				ret
+ 000000C2			_MainProc    ENDP
+
+
+
+				;ftoa(fn,string)
+				;exp		[ebp-4]	DWORD	?
+				;byteTen	[ebp-8]	BYTE	10
+ 000000C2			ftoaProc	PROC
+ 000000C2  55				push	ebp
+ 000000C3  8B EC			mov		ebp,esp
+ 000000C5  83 EC 08			sub		esp,8
+ 000000C8  57				push	edi
+ 000000C9  51				push	ecx
+ 000000CA  50				push	eax
+ 000000CB  C7 45 FC			mov		DWORD PTR [ebp-4],0
+	   00000000
+ 000000D2  C6 45 F8 0A			mov		BYTE PTR [ebp-8],10
+ 000000D6  9B DB E3			finit
+ 000000D9  D9 45 08			fld		REAL4 PTR [ebp+8]
+ 000000DC  8B 7D 0C			mov		edi,[ebp+12]
+
+ 000000DF				checkSign:
+ 000000DF  D9 E4			ftst
+ 000000E1  9B DF E0			fstsw	ax
+ 000000E4  9E				sahf
+ 000000E5  77 0C			jnbe	Positive
+ 000000E7  0F 84 000000D0		je		zero
+ 000000ED  C6 07 2D			mov		BYTE PTR [edi],'-'
+ 000000F0  47				inc		edi
+ 000000F1  D9 E0			fchs
+ 000000F3				Positive:
+ 000000F3  C6 07 20			mov		BYTE PTR [edi],' '
+ 000000F6  47				inc		edi
+
+ 000000F7				checkDigit:
+ 000000F7  D8 15 00000058 R		fcom	ten
+ 000000FD  9B DF E0			fstsw	ax
+ 00000100  9E				sahf	
+ 00000101  72 15			jnae	elseLess
+
+ 00000103				untilLess:
+ 00000103  D8 35 00000058 R		fdiv	ten
+ 00000109  FF 45 FC			inc		DWORD PTR [ebp-4]
+ 0000010C  D8 15 00000058 R		fcom	ten
+ 00000112  9B DF E0			fstsw	ax
+ 00000115  9E				sahf
+ 00000116  73 EB			jnb		untilLess
+
+ 00000118				elseLess:
+ 00000118  D8 15 00000050 R		fcom	one
+ 0000011E  9B DF E0			fstsw	ax
+ 00000121  9E				sahf
+ 00000122  73 0B			jnb		roundNum
+ 00000124  D8 0D 00000058 R		fmul	ten
+ 0000012A  FF 4D FC			dec		DWORD PTR [ebp-4]
+ 0000012D  EB E9			jmp		elseLess
+
+ 0000012F				roundNum:
+ 0000012F  D8 05 00000054 R		fadd	round
+ 00000135  D8 15 00000058 R		fcom	ten
+ 0000013B  9B DF E0			fstsw	ax
+ 0000013E  9E				sahf
+ 0000013F  72 09			jnae	saveFirstDigits
+ 00000141  D8 35 00000058 R		fdiv	ten
+ 00000147  FF 4D FC			dec		DWORD PTR [ebp-4]
+
+
+ 0000014A				saveFirstDigits:
+ 0000014A  D9 C0			fld		st
+ 0000014C  DB 0D 00000074 R		fisttp	digit
+ 00000152  DA 25 00000074 R		fisub	digit
+ 00000158  D8 0D 00000058 R		fmul	ten
+ 0000015E  8B 1D 00000074 R		mov		ebx,digit
+ 00000164  83 CB 30			or		ebx,30h
+ 00000167  88 1F			mov		BYTE PTR [edi],bl
+ 00000169  47				inc		edi
+ 0000016A  C6 07 2E			mov		BYTE PTR [edi],'.'
+ 0000016D  47				inc		edi
+ 0000016E  B9 00000005			mov		ecx,5
+
+ 00000173				saveRestDigits:
+ 00000173  D9 C0			fld		st
+ 00000175  DB 0D 00000074 R		fisttp	digit
+ 0000017B  DA 25 00000074 R		fisub	digit
+ 00000181  D8 0D 00000058 R		fmul	ten
+ 00000187  8B 1D 00000074 R		mov		ebx,digit
+ 0000018D  83 CB 30			or		ebx,30h
+ 00000190  88 1F			mov		BYTE PTR [edi],bl
+ 00000192  47				inc		edi
+ 00000193  E2 DE			loop	saveRestDigits
+
+ 00000195				checkExp:
+ 00000195  C6 07 45			mov		BYTE PTR [edi],'E'
+ 00000198  47				inc		edi
+ 00000199  8B 45 FC			mov		eax,DWORD PTR [ebp-4]
+ 0000019C  83 F8 00			cmp		eax,0
+ 0000019F  7D 08			jge		positiveExp
+ 000001A1  C6 07 2D			mov		BYTE PTR [edi],'-'
+ 000001A4  47				inc		edi
+ 000001A5  F7 D8			neg		eax
+ 000001A7  EB 04			jmp		saveExp
+
+ 000001A9				positiveExp:
+ 000001A9  C6 07 2B			mov		BYTE PTR [edi],'+'
+ 000001AC  47				inc		edi
+
+ 000001AD				saveExp:
+ 000001AD  F6 75 F8			div		BYTE PTR [ebp-8]
+ 000001B0  0C 30			or		al,30h
+ 000001B2  80 CC 30			or		ah,30h
+ 000001B5  88 07			mov		BYTE PTR [edi],al
+ 000001B7  47				inc		edi
+ 000001B8  88 27			mov		BYTE PTR [edi],ah
+ 000001BA  47				inc		edi
+ 000001BB  EB 04			jmp		finish
+
+ 000001BD				zero:
+ 000001BD  C6 07 30			mov		BYTE PTR [edi],'0'
+ 000001C0  47				inc		edi
+
+ 000001C1				finish:
+ 000001C1  58				pop		eax
+ 000001C2  59				pop		ecx
+ 000001C3  5F				pop		edi
+ 000001C4  8B E5			mov		esp,ebp
+ 000001C6  5D				pop		ebp
+ 000001C7  C3				ret
+ 000001C8			ftoaProc	ENDP
+
+ 000001C8			atofProc	PROC
+ 000001C8  55				push	ebp
+ 000001C9  8B EC			mov		ebp,esp
+ 000001CB  50				push	eax
+ 000001CC  56				push	esi
+ 000001CD  83 EC 10			sub		esp,16
+ 000001D0  C7 45 FC			mov		DWORD PTR [ebp-4],0
+	   00000000
+ 000001D7  C7 45 F8			mov		DWORD PTR [ebp-8],0
+	   00000000
+ 000001DE  C7 45 F4			mov		DWORD PTR [ebp-12],10
+	   0000000A
+ 000001E5  8B 75 08			mov		esi,[ebp+8]
+ 000001E8  D9 E8			fld1
+ 000001EA  D9 EE			fldz
+						
+ 000001EC				CheckSign:
+ 000001EC  8A 06			mov		al,BYTE PTR [esi]
+ 000001EE  3C 2D			cmp		al,'-'
+ 000001F0  75 0A			jne		CheckDigit
+ 000001F2  C7 45 FC			mov		DWORD PTR [ebp-4],-1
+	   FFFFFFFF
+ 000001F9  46				inc		esi
+ 000001FA  8A 06			mov		al,BYTE PTR [esi]
+
+ 000001FC				CheckDigit:
+ 000001FC  3C 30			cmp		al,'0'
+ 000001FE  7C 30			jl		endCheck
+ 00000200  3C 39			cmp		al,'9'
+ 00000202  7F 2C			jg		endCheck
+ 00000204  83 E0 0F			and		eax,0000000fh
+ 00000207  89 45 F0			mov		DWORD PTR [ebp-16],eax
+ 0000020A  DA 4D F4			fimul	DWORD PTR [ebp-12]
+ 0000020D  DA 45 F0			fiadd	DWORD PTR [ebp-16]
+ 00000210  83 7D F8 FF			cmp		DWORD PTR [ebp-8],-1
+ 00000214  75 07			jne		nextDigit
+ 00000216  D9 C9			fxch
+ 00000218  DA 4D F4			fimul	DWORD PTR [ebp-12]
+ 0000021B  D9 C9			fxch
+
+ 0000021D				nextDigit:
+ 0000021D  46				inc		esi
+ 0000021E  8A 06			mov		al,BYTE PTR [esi]
+ 00000220  3C 2E			cmp		al,'.'
+ 00000222  75 D8			jne		CheckDigit
+ 00000224  C7 45 F8			mov		DWORD PTR [ebp-8],-1
+	   FFFFFFFF
+ 0000022B  46				inc		esi
+ 0000022C  8A 06			mov		al,BYTE PTR [esi]
+ 0000022E  EB CC			jmp		CheckDigit
+
+ 00000230				endCheck:
+ 00000230  DE F1			fdivr
+ 00000232  83 7D FC FF			cmp		DWORD PTR [ebp-4],-1
+ 00000236  75 02			jne		exit
+ 00000238  D9 E0			fchs
+
+ 0000023A				exit:
+ 0000023A  5E				pop		esi
+ 0000023B  58				pop		eax
+ 0000023C  8B E5			mov		esp,ebp
+ 0000023E  5D				pop		ebp
+ 0000023F  C3				ret
+ 00000240			atofProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/06/20 19:13:51
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atof . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+ftoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 000000A5 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000240 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 000000C2 Public
+  calRoot  . . . . . . . . . . .	L Near	 00000035 _TEXT	
+atofProc . . . . . . . . . . . .	P Near	 000001C8 _TEXT	Length= 00000078 Public
+  CheckSign  . . . . . . . . . .	L Near	 000001EC _TEXT	
+  CheckDigit . . . . . . . . . .	L Near	 000001FC _TEXT	
+  nextDigit  . . . . . . . . . .	L Near	 0000021D _TEXT	
+  endCheck . . . . . . . . . . .	L Near	 00000230 _TEXT	
+  exit . . . . . . . . . . . . .	L Near	 0000023A _TEXT	
+ftoaProc . . . . . . . . . . . .	P Near	 000000C2 _TEXT	Length= 00000106 Public
+  checkSign  . . . . . . . . . .	L Near	 000000DF _TEXT	
+  Positive . . . . . . . . . . .	L Near	 000000F3 _TEXT	
+  checkDigit . . . . . . . . . .	L Near	 000000F7 _TEXT	
+  untilLess  . . . . . . . . . .	L Near	 00000103 _TEXT	
+  elseLess . . . . . . . . . . .	L Near	 00000118 _TEXT	
+  roundNum . . . . . . . . . . .	L Near	 0000012F _TEXT	
+  saveFirstDigits  . . . . . . .	L Near	 0000014A _TEXT	
+  saveRestDigits . . . . . . . .	L Near	 00000173 _TEXT	
+  checkExp . . . . . . . . . . .	L Near	 00000195 _TEXT	
+  positiveExp  . . . . . . . . .	L Near	 000001A9 _TEXT	
+  saveExp  . . . . . . . . . . .	L Near	 000001AD _TEXT	
+  zero . . . . . . . . . . . . .	L Near	 000001BD _TEXT	
+  finish . . . . . . . . . . . .	L Near	 000001C1 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+digit  . . . . . . . . . . . . .	DWord	 00000074 _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+inPrompt . . . . . . . . . . . .	Byte	 00000078 _DATA	
+oldRoot  . . . . . . . . . . . .	DWord	 0000006C _DATA	
+one  . . . . . . . . . . . . . .	DWord	 00000050 _DATA	
+resLbl . . . . . . . . . . . . .	Byte	 00000090 _DATA	
+root . . . . . . . . . . . . . .	DWord	 00000068 _DATA	
+round  . . . . . . . . . . . . .	DWord	 00000054 _DATA	
+smallValue . . . . . . . . . . .	DWord	 00000070 _DATA	
+string . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+ten  . . . . . . . . . . . . . .	DWord	 00000058 _DATA	
+three  . . . . . . . . . . . . .	DWord	 00000064 _DATA	
+two  . . . . . . . . . . . . . .	DWord	 00000060 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+x  . . . . . . . . . . . . . . .	DWord	 0000005C _DATA	
+
+	   0 Warnings
+	   0 Errors

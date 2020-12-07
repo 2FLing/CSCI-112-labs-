@@ -1,0 +1,372 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/06/20 16:51:03
+example.asm						     Page 1 - 1
+
+
+				; ASCII	to floating point code(Homework)
+				; Author:  MingkuanPang
+				; Date:    12/3/2020    
+
+				.586
+				.MODEL FLAT
+				INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+ 00000000			.DATA	; reserve storage for data
+ 00000000 41200000		ten		REAL4	10.0
+ 00000004 3F800000		one		REAL4	1.0
+ 00000008 36A7C5AC		round	REAL4   0.000005
+ 0000000C 00000000		digit	DWORD	?
+ 00000010  00000050 [		string BYTE	80 DUP (?)
+	    00
+	   ]
+ 00000060 00000000		area	REAL4	?
+ 00000064 00000000		cir		REAL4	?
+ 00000068 40000000		two		REAL4   2.0
+ 0000006C 50 6C 65 61 73	inPrompt BYTE	"Please enter the radius: ",0
+	   65 20 65 6E 74
+	   65 72 20 74 68
+	   65 20 72 61 64
+	   69 75 73 3A 20
+	   00
+ 00000086 54 68 65 20 72	resLbl	BYTE	"The result will be: ",0
+	   65 73 75 6C 74
+	   20 77 69 6C 6C
+	   20 62 65 3A 20
+	   00
+ 0000009B 41 72 65 61 3A	areaLbl	BYTE	"Area:"
+ 000000A0  0000000C [		areaStr	BYTE	12 DUP (?),0dh,0ah
+	    00
+	   ] 0D 0A
+ 000000AE 43 69 72 63 75	cirlbl	BYTE	"Circumference:"
+	   6D 66 65 72 65
+	   6E 63 65 3A
+ 000000BC  0000000C [		cirStr	BYTE	12 DUP (?),0
+	    00
+	   ] 00
+					
+				ftoa	MACRO	fnum,str
+					push	eax
+					lea		eax,str
+					push	eax
+					push	fnum
+					call	ftoaProc
+					add		esp,8
+					pop		eax
+					ENDM
+
+				atof	MACRO  fNum
+					push	eax
+					lea		eax,fNum
+					push	eax
+					call	atofProc
+					add		esp,4
+					pop		eax
+					ENDM
+
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					input	inprompt,string,80
+					atof	string
+ 0000002F  D9 C0			fld		st
+ 00000031  D9 EB			fldpi
+ 00000033  DE C9			fmul
+ 00000035  D8 0D 00000068 R		fmul	two
+ 0000003B  D9 1D 00000064 R		fstp	Cir
+ 00000041  D9 C0			fld		st
+ 00000043  DE C9			fmul
+ 00000045  D9 EB			fldpi	
+ 00000047  DE C9			fmul
+ 00000049  D9 1D 00000060 R		fstp	area
+					ftoa	cir,cirStr
+					ftoa	area,areaStr
+					output	resLbl,areaLbl
+ 00000096  B8 00000000			mov		eax,0
+ 0000009B  C3				ret
+ 0000009C			_MainProc    ENDP
+
+				;ftoa(fn,string)
+				;exp		[ebp-4]	DWORD	?
+				;byteTen	[ebp-8]	BYTE	10
+ 0000009C			ftoaProc	PROC
+ 0000009C  55				push	ebp
+ 0000009D  8B EC			mov		ebp,esp
+ 0000009F  83 EC 08			sub		esp,8
+ 000000A2  57				push	edi
+ 000000A3  51				push	ecx
+ 000000A4  50				push	eax
+ 000000A5  C7 45 FC			mov		DWORD PTR [ebp-4],0
+	   00000000
+ 000000AC  C6 45 F8 0A			mov		BYTE PTR [ebp-8],10
+ 000000B0  9B DB E3			finit
+ 000000B3  D9 45 08			fld		REAL4 PTR [ebp+8]
+ 000000B6  8B 7D 0C			mov		edi,[ebp+12]
+
+ 000000B9				checkSign:
+ 000000B9  D9 E4			ftst
+ 000000BB  9B DF E0			fstsw	ax
+ 000000BE  9E				sahf
+ 000000BF  77 0C			jnbe	Positive
+ 000000C1  0F 84 000000D0		je		zero
+ 000000C7  C6 07 2D			mov		BYTE PTR [edi],'-'
+ 000000CA  47				inc		edi
+ 000000CB  D9 E0			fchs
+ 000000CD				Positive:
+ 000000CD  C6 07 20			mov		BYTE PTR [edi],' '
+ 000000D0  47				inc		edi
+
+ 000000D1				checkDigit:
+ 000000D1  D8 15 00000000 R		fcom	ten
+ 000000D7  9B DF E0			fstsw	ax
+ 000000DA  9E				sahf	
+ 000000DB  72 15			jnae	elseLess
+
+ 000000DD				untilLess:
+ 000000DD  D8 35 00000000 R		fdiv	ten
+ 000000E3  FF 45 FC			inc		DWORD PTR [ebp-4]
+ 000000E6  D8 15 00000000 R		fcom	ten
+ 000000EC  9B DF E0			fstsw	ax
+ 000000EF  9E				sahf
+ 000000F0  73 EB			jnb		untilLess
+
+ 000000F2				elseLess:
+ 000000F2  D8 15 00000004 R		fcom	one
+ 000000F8  9B DF E0			fstsw	ax
+ 000000FB  9E				sahf
+ 000000FC  73 0B			jnb		roundNum
+ 000000FE  D8 0D 00000000 R		fmul	ten
+ 00000104  FF 4D FC			dec		DWORD PTR [ebp-4]
+ 00000107  EB E9			jmp		elseLess
+
+ 00000109				roundNum:
+ 00000109  D8 05 00000008 R		fadd	round
+ 0000010F  D8 15 00000000 R		fcom	ten
+ 00000115  9B DF E0			fstsw	ax
+ 00000118  9E				sahf
+ 00000119  72 09			jnae	saveFirstDigits
+ 0000011B  D8 35 00000000 R		fdiv	ten
+ 00000121  FF 4D FC			dec		DWORD PTR [ebp-4]
+
+
+ 00000124				saveFirstDigits:
+ 00000124  D9 C0			fld		st
+ 00000126  DB 0D 0000000C R		fisttp	digit
+ 0000012C  DA 25 0000000C R		fisub	digit
+ 00000132  D8 0D 00000000 R		fmul	ten
+ 00000138  8B 1D 0000000C R		mov		ebx,digit
+ 0000013E  83 CB 30			or		ebx,30h
+ 00000141  88 1F			mov		BYTE PTR [edi],bl
+ 00000143  47				inc		edi
+ 00000144  C6 07 2E			mov		BYTE PTR [edi],'.'
+ 00000147  47				inc		edi
+ 00000148  B9 00000005			mov		ecx,5
+
+ 0000014D				saveRestDigits:
+ 0000014D  D9 C0			fld		st
+ 0000014F  DB 0D 0000000C R		fisttp	digit
+ 00000155  DA 25 0000000C R		fisub	digit
+ 0000015B  D8 0D 00000000 R		fmul	ten
+ 00000161  8B 1D 0000000C R		mov		ebx,digit
+ 00000167  83 CB 30			or		ebx,30h
+ 0000016A  88 1F			mov		BYTE PTR [edi],bl
+ 0000016C  47				inc		edi
+ 0000016D  E2 DE			loop	saveRestDigits
+
+ 0000016F				checkExp:
+ 0000016F  C6 07 45			mov		BYTE PTR [edi],'E'
+ 00000172  47				inc		edi
+ 00000173  8B 45 FC			mov		eax,DWORD PTR [ebp-4]
+ 00000176  83 F8 00			cmp		eax,0
+ 00000179  7D 08			jge		positiveExp
+ 0000017B  C6 07 2D			mov		BYTE PTR [edi],'-'
+ 0000017E  47				inc		edi
+ 0000017F  F7 D8			neg		eax
+ 00000181  EB 04			jmp		saveExp
+
+ 00000183				positiveExp:
+ 00000183  C6 07 2B			mov		BYTE PTR [edi],'+'
+ 00000186  47				inc		edi
+
+ 00000187				saveExp:
+ 00000187  F6 75 F8			div		BYTE PTR [ebp-8]
+ 0000018A  0C 30			or		al,30h
+ 0000018C  80 CC 30			or		ah,30h
+ 0000018F  88 07			mov		BYTE PTR [edi],al
+ 00000191  47				inc		edi
+ 00000192  88 27			mov		BYTE PTR [edi],ah
+ 00000194  47				inc		edi
+ 00000195  EB 04			jmp		finish
+
+ 00000197				zero:
+ 00000197  C6 07 30			mov		BYTE PTR [edi],'0'
+ 0000019A  47				inc		edi
+
+ 0000019B				finish:
+ 0000019B  58				pop		eax
+ 0000019C  59				pop		ecx
+ 0000019D  5F				pop		edi
+ 0000019E  8B E5			mov		esp,ebp
+ 000001A0  5D				pop		ebp
+ 000001A1  C3				ret
+ 000001A2			ftoaProc	ENDP
+
+ 000001A2			atofProc	PROC
+ 000001A2  55				push	ebp
+ 000001A3  8B EC			mov		ebp,esp
+ 000001A5  50				push	eax
+ 000001A6  56				push	esi
+ 000001A7  83 EC 10			sub		esp,16
+ 000001AA  C7 45 FC			mov		DWORD PTR [ebp-4],0
+	   00000000
+ 000001B1  C7 45 F8			mov		DWORD PTR [ebp-8],0
+	   00000000
+ 000001B8  C7 45 F4			mov		DWORD PTR [ebp-12],10
+	   0000000A
+ 000001BF  8B 75 08			mov		esi,[ebp+8]
+ 000001C2  D9 E8			fld1
+ 000001C4  D9 EE			fldz
+						
+ 000001C6				CheckSign:
+ 000001C6  8A 06			mov		al,BYTE PTR [esi]
+ 000001C8  3C 2D			cmp		al,'-'
+ 000001CA  75 0A			jne		CheckDigit
+ 000001CC  C7 45 FC			mov		DWORD PTR [ebp-4],-1
+	   FFFFFFFF
+ 000001D3  46				inc		esi
+ 000001D4  8A 06			mov		al,BYTE PTR [esi]
+
+ 000001D6				CheckDigit:
+ 000001D6  3C 30			cmp		al,'0'
+ 000001D8  7C 30			jl		endCheck
+ 000001DA  3C 39			cmp		al,'9'
+ 000001DC  7F 2C			jg		endCheck
+ 000001DE  83 E0 0F			and		eax,0000000fh
+ 000001E1  89 45 F0			mov		DWORD PTR [ebp-16],eax
+ 000001E4  DA 4D F4			fimul	DWORD PTR [ebp-12]
+ 000001E7  DA 45 F0			fiadd	DWORD PTR [ebp-16]
+ 000001EA  83 7D F8 FF			cmp		DWORD PTR [ebp-8],-1
+ 000001EE  75 07			jne		nextDigit
+ 000001F0  D9 C9			fxch
+ 000001F2  DA 4D F4			fimul	DWORD PTR [ebp-12]
+ 000001F5  D9 C9			fxch
+
+ 000001F7				nextDigit:
+ 000001F7  46				inc		esi
+ 000001F8  8A 06			mov		al,BYTE PTR [esi]
+ 000001FA  3C 2E			cmp		al,'.'
+ 000001FC  75 D8			jne		CheckDigit
+ 000001FE  C7 45 F8			mov		DWORD PTR [ebp-8],-1
+	   FFFFFFFF
+ 00000205  46				inc		esi
+ 00000206  8A 06			mov		al,BYTE PTR [esi]
+ 00000208  EB CC			jmp		CheckDigit
+
+ 0000020A				endCheck:
+ 0000020A  DE F1			fdivr
+ 0000020C  83 7D FC FF			cmp		DWORD PTR [ebp-4],-1
+ 00000210  75 02			jne		exit
+ 00000212  D9 E0			fchs
+
+ 00000214				exit:
+ 00000214  5E				pop		esi
+ 00000215  58				pop		eax
+ 00000216  8B E5			mov		esp,ebp
+ 00000218  5D				pop		ebp
+ 00000219  C3				ret
+ 0000021A			atofProc	ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/06/20 16:51:03
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atof . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+ftoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 000000C9 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000021A Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 0000009C Public
+atofProc . . . . . . . . . . . .	P Near	 000001A2 _TEXT	Length= 00000078 Public
+  CheckSign  . . . . . . . . . .	L Near	 000001C6 _TEXT	
+  CheckDigit . . . . . . . . . .	L Near	 000001D6 _TEXT	
+  nextDigit  . . . . . . . . . .	L Near	 000001F7 _TEXT	
+  endCheck . . . . . . . . . . .	L Near	 0000020A _TEXT	
+  exit . . . . . . . . . . . . .	L Near	 00000214 _TEXT	
+ftoaProc . . . . . . . . . . . .	P Near	 0000009C _TEXT	Length= 00000106 Public
+  checkSign  . . . . . . . . . .	L Near	 000000B9 _TEXT	
+  Positive . . . . . . . . . . .	L Near	 000000CD _TEXT	
+  checkDigit . . . . . . . . . .	L Near	 000000D1 _TEXT	
+  untilLess  . . . . . . . . . .	L Near	 000000DD _TEXT	
+  elseLess . . . . . . . . . . .	L Near	 000000F2 _TEXT	
+  roundNum . . . . . . . . . . .	L Near	 00000109 _TEXT	
+  saveFirstDigits  . . . . . . .	L Near	 00000124 _TEXT	
+  saveRestDigits . . . . . . . .	L Near	 0000014D _TEXT	
+  checkExp . . . . . . . . . . .	L Near	 0000016F _TEXT	
+  positiveExp  . . . . . . . . .	L Near	 00000183 _TEXT	
+  saveExp  . . . . . . . . . . .	L Near	 00000187 _TEXT	
+  zero . . . . . . . . . . . . .	L Near	 00000197 _TEXT	
+  finish . . . . . . . . . . . .	L Near	 0000019B _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+areaLbl  . . . . . . . . . . . .	Byte	 0000009B _DATA	
+areaStr  . . . . . . . . . . . .	Byte	 000000A0 _DATA	
+area . . . . . . . . . . . . . .	DWord	 00000060 _DATA	
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+cirStr . . . . . . . . . . . . .	Byte	 000000BC _DATA	
+cirlbl . . . . . . . . . . . . .	Byte	 000000AE _DATA	
+cir  . . . . . . . . . . . . . .	DWord	 00000064 _DATA	
+digit  . . . . . . . . . . . . .	DWord	 0000000C _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+inPrompt . . . . . . . . . . . .	Byte	 0000006C _DATA	
+one  . . . . . . . . . . . . . .	DWord	 00000004 _DATA	
+resLbl . . . . . . . . . . . . .	Byte	 00000086 _DATA	
+round  . . . . . . . . . . . . .	DWord	 00000008 _DATA	
+string . . . . . . . . . . . . .	Byte	 00000010 _DATA	
+ten  . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+two  . . . . . . . . . . . . . .	DWord	 00000068 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

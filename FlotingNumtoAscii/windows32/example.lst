@@ -1,0 +1,254 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/06/20 15:58:39
+example.asm						     Page 1 - 1
+
+
+				; ASCII	to floating point code(Homework)
+				; Author:  MingkuanPang
+				; Date:    12/3/2020    
+
+				.586
+				.MODEL FLAT
+				INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+ 00000000			.DATA	; reserve storage for data
+ 00000000 41200000		ten		REAL4	10.0
+ 00000004 3F800000		one		REAL4	1.0
+ 00000008 36A7C5AC		round	REAL4   0.000005
+ 0000000C 00000000		digit	DWORD	?
+ 00000010  00000050 [		string BYTE	80 DUP (?)
+	    00
+	   ]
+ 00000060 395C3372		fnumber	REAL4	0.00021
+ 00000064 54 68 65 20 72	resLbl	BYTE	"The result will be: ",0
+	   65 73 75 6C 74
+	   20 77 69 6C 6C
+	   20 62 65 3A 20
+	   00
+
+				ftoa	MACRO	fnum,str
+					push	eax
+					lea		eax,str
+					push	eax
+					push	fnum
+					call	ftoaProc
+					add		esp,8
+					pop		eax
+					ENDM
+
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					ftoa	fnumber,string
+					output	resLbl,string
+ 00000030  B8 00000000			mov		eax,0
+ 00000035  C3				ret
+ 00000036			_MainProc    ENDP
+
+				;ftoa(fn,string)
+				;exp		[ebp-4]	DWORD	?
+				;byteTen	[ebp-8]	BYTE	10
+ 00000036			ftoaProc	PROC
+ 00000036  55				push	ebp
+ 00000037  8B EC			mov		ebp,esp
+ 00000039  83 EC 08			sub		esp,8
+ 0000003C  57				push	edi
+ 0000003D  51				push	ecx
+ 0000003E  50				push	eax
+ 0000003F  C7 45 FC			mov		DWORD PTR [ebp-4],0
+	   00000000
+ 00000046  C6 45 F8 0A			mov		BYTE PTR [ebp-8],10
+ 0000004A  9B DB E3			finit
+ 0000004D  D9 45 08			fld		REAL4 PTR [ebp+8]
+ 00000050  8B 7D 0C			mov		edi,[ebp+12]
+
+ 00000053				checkSign:
+ 00000053  D9 E4			ftst
+ 00000055  9B DF E0			fstsw	ax
+ 00000058  9E				sahf
+ 00000059  77 0C			jnbe	Positive
+ 0000005B  0F 84 000000D0		je		zero
+ 00000061  C6 07 2D			mov		BYTE PTR [edi],'-'
+ 00000064  47				inc		edi
+ 00000065  D9 E0			fchs
+ 00000067				Positive:
+ 00000067  C6 07 20			mov		BYTE PTR [edi],' '
+ 0000006A  47				inc		edi
+
+ 0000006B				checkDigit:
+ 0000006B  D8 15 00000000 R		fcom	ten
+ 00000071  9B DF E0			fstsw	ax
+ 00000074  9E				sahf	
+ 00000075  72 15			jnae	elseLess
+
+ 00000077				untilLess:
+ 00000077  D8 35 00000000 R		fdiv	ten
+ 0000007D  FF 45 FC			inc		DWORD PTR [ebp-4]
+ 00000080  D8 15 00000000 R		fcom	ten
+ 00000086  9B DF E0			fstsw	ax
+ 00000089  9E				sahf
+ 0000008A  73 EB			jnb		untilLess
+
+ 0000008C				elseLess:
+ 0000008C  D8 15 00000004 R		fcom	one
+ 00000092  9B DF E0			fstsw	ax
+ 00000095  9E				sahf
+ 00000096  73 0B			jnb		roundNum
+ 00000098  D8 0D 00000000 R		fmul	ten
+ 0000009E  FF 4D FC			dec		DWORD PTR [ebp-4]
+ 000000A1  EB E9			jmp		elseLess
+
+ 000000A3				roundNum:
+ 000000A3  D8 05 00000008 R		fadd	round
+ 000000A9  D8 15 00000000 R		fcom	ten
+ 000000AF  9B DF E0			fstsw	ax
+ 000000B2  9E				sahf
+ 000000B3  72 09			jnae	saveFirstDigits
+ 000000B5  D8 35 00000000 R		fdiv	ten
+ 000000BB  FF 4D FC			dec		DWORD PTR [ebp-4]
+
+
+ 000000BE				saveFirstDigits:
+ 000000BE  D9 C0			fld		st
+ 000000C0  DB 1D 0000000C R		fistp	digit
+ 000000C6  DA 25 0000000C R		fisub	digit
+ 000000CC  D8 0D 00000000 R		fmul	ten
+ 000000D2  8B 1D 0000000C R		mov		ebx,digit
+ 000000D8  83 CB 30			or		ebx,30h
+ 000000DB  88 1F			mov		BYTE PTR [edi],bl
+ 000000DD  47				inc		edi
+ 000000DE  C6 07 2E			mov		BYTE PTR [edi],'.'
+ 000000E1  47				inc		edi
+ 000000E2  B9 00000005			mov		ecx,5
+
+ 000000E7				saveRestDigits:
+ 000000E7  D9 C0			fld		st
+ 000000E9  DB 0D 0000000C R		fisttp	digit
+ 000000EF  DA 25 0000000C R		fisub	digit
+ 000000F5  D8 0D 00000000 R		fmul	ten
+ 000000FB  8B 1D 0000000C R		mov		ebx,digit
+ 00000101  83 CB 30			or		ebx,30h
+ 00000104  88 1F			mov		BYTE PTR [edi],bl
+ 00000106  47				inc		edi
+ 00000107  E2 DE			loop	saveRestDigits
+
+ 00000109				checkExp:
+ 00000109  C6 07 45			mov		BYTE PTR [edi],'E'
+ 0000010C  47				inc		edi
+ 0000010D  8B 45 FC			mov		eax,DWORD PTR [ebp-4]
+ 00000110  83 F8 00			cmp		eax,0
+ 00000113  7D 08			jge		positiveExp
+ 00000115  C6 07 2D			mov		BYTE PTR [edi],'-'
+ 00000118  47				inc		edi
+ 00000119  F7 D8			neg		eax
+ 0000011B  EB 04			jmp		saveExp
+
+ 0000011D				positiveExp:
+ 0000011D  C6 07 2B			mov		BYTE PTR [edi],'+'
+ 00000120  47				inc		edi
+
+ 00000121				saveExp:
+ 00000121  F6 75 F8			div		BYTE PTR [ebp-8]
+ 00000124  0C 30			or		al,30h
+ 00000126  80 CC 30			or		ah,30h
+ 00000129  88 07			mov		BYTE PTR [edi],al
+ 0000012B  47				inc		edi
+ 0000012C  88 27			mov		BYTE PTR [edi],ah
+ 0000012E  47				inc		edi
+ 0000012F  EB 04			jmp		finish
+
+ 00000131				zero:
+ 00000131  C6 07 30			mov		BYTE PTR [edi],'0'
+ 00000134  47				inc		edi
+
+ 00000135				finish:
+ 00000135  58				pop		eax
+ 00000136  59				pop		ecx
+ 00000137  5F				pop		edi
+ 00000138  8B E5			mov		esp,ebp
+ 0000013A  5D				pop		ebp
+ 0000013B  C3				ret
+ 0000013C			ftoaProc	ENDP
+
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/06/20 15:58:39
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+ftoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000079 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000013C Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000036 Public
+ftoaProc . . . . . . . . . . . .	P Near	 00000036 _TEXT	Length= 00000106 Public
+  checkSign  . . . . . . . . . .	L Near	 00000053 _TEXT	
+  Positive . . . . . . . . . . .	L Near	 00000067 _TEXT	
+  checkDigit . . . . . . . . . .	L Near	 0000006B _TEXT	
+  untilLess  . . . . . . . . . .	L Near	 00000077 _TEXT	
+  elseLess . . . . . . . . . . .	L Near	 0000008C _TEXT	
+  roundNum . . . . . . . . . . .	L Near	 000000A3 _TEXT	
+  saveFirstDigits  . . . . . . .	L Near	 000000BE _TEXT	
+  saveRestDigits . . . . . . . .	L Near	 000000E7 _TEXT	
+  checkExp . . . . . . . . . . .	L Near	 00000109 _TEXT	
+  positiveExp  . . . . . . . . .	L Near	 0000011D _TEXT	
+  saveExp  . . . . . . . . . . .	L Near	 00000121 _TEXT	
+  zero . . . . . . . . . . . . .	L Near	 00000131 _TEXT	
+  finish . . . . . . . . . . . .	L Near	 00000135 _TEXT	
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+digit  . . . . . . . . . . . . .	DWord	 0000000C _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+fnumber  . . . . . . . . . . . .	DWord	 00000060 _DATA	
+one  . . . . . . . . . . . . . .	DWord	 00000004 _DATA	
+resLbl . . . . . . . . . . . . .	Byte	 00000064 _DATA	
+round  . . . . . . . . . . . . .	DWord	 00000008 _DATA	
+string . . . . . . . . . . . . .	Byte	 00000010 _DATA	
+ten  . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   0 Errors

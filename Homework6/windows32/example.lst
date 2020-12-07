@@ -1,8 +1,8 @@
-Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/04/20 01:18:10
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/04/20 13:15:14
 example.asm						     Page 1 - 1
 
 
-				; ASCII	to floating point code(Homework)
+				; ASCII	to floating point code(Homework6)
 				; Author:  MingkuanPang
 				; Date:    12/3/2020    
 
@@ -70,9 +70,9 @@ example.asm						     Page 1 - 1
  00000055  B8 00000000			mov		eax,0
 
  0000005A				checkChar:
- 0000005A  80 3E 00			cmp		BYTE PTR [esi],0
+ 0000005A  80 3E 00			cmp		BYTE PTR [esi],0	;see if it is the end of the string
  0000005D  74 04			je		finishChecking
- 0000005F  40				inc		eax
+ 0000005F  40				inc		eax					;if not eax+=1
 
  00000060				nextChar:
  00000060  46				inc		esi
@@ -96,10 +96,10 @@ example.asm						     Page 1 - 1
  0000006F  8B 7D 08			mov		edi,[ebp+8]
 
  00000072				SkipSpace:
- 00000072  80 3E 00			cmp	BYTE PTR [esi],0
+ 00000072  80 3E 00			cmp	BYTE PTR [esi],0	;check if it is the end of the string
  00000075  74 0B			je	finish
- 00000077  80 3E 20			cmp	BYTE PTR [esi],' '
- 0000007A  75 03			jne	saveChar
+ 00000077  80 3E 20			cmp	BYTE PTR [esi],' '  ;if it is not space then save this character
+ 0000007A  75 03			jne	saveChar			;otherwise skip it
 
  0000007C				nextChar:
  0000007C  46				inc		esi
@@ -130,11 +130,11 @@ example.asm						     Page 1 - 1
  0000008A  55				push	ebp
  0000008B  8B EC			mov		ebp,esp
  0000008D  83 EC 10			sub		esp,16
- 00000090  C7 45 FC			mov		DWORD PTR [ebp-4],10
+ 00000090  C7 45 FC			mov		DWORD PTR [ebp-4],10	;int ten
 	   0000000A
- 00000097  C7 45 F8			mov		DWORD PTR [ebp-8],0
+ 00000097  C7 45 F8			mov		DWORD PTR [ebp-8],0		;bool point=false
 	   00000000
- 0000009E  C7 45 F4			mov		DWORD PTR [ebp-12],0
+ 0000009E  C7 45 F4			mov		DWORD PTR [ebp-12],0	;bool neg=false
 	   00000000
  000000A5  50				push	eax
  000000A6  53				push	ebx
@@ -143,43 +143,43 @@ example.asm						     Page 1 - 1
  000000A9  8B 75 08			mov		esi,[ebp+8]
  000000AC  56				push	esi
  000000AD  E8 FFFFFFB4			call	trimStrProc
- 000000B2  E8 FFFFFF97			call	strLenProc
+ 000000B2  E8 FFFFFF97			call	strLenProc	;set eax to be the length of the string
  000000B7  83 C4 04			add		esp,4
  000000BA  B9 00000000			mov		ecx,0
 
  000000BF				initializeST:
- 000000BF  D9 E8			fld1
+ 000000BF  D9 E8			fld1		;set ST(0)=0.0, ST(1)=1.0
  000000C1  D9 EE			fldz
 
  000000C3				CheckSign:
- 000000C3  80 3E 2D			cmp		BYTE PTR [esi],'-'
+ 000000C3  80 3E 2D			cmp		BYTE PTR [esi],'-'    ;check if the sign is minus
  000000C6  75 09			jne		anymoreDigit
- 000000C8  C7 45 F4			mov		DWORD PTR [ebp-12],-1
+ 000000C8  C7 45 F4			mov		DWORD PTR [ebp-12],-1 ;if the sign is minus then neg=true
 	   FFFFFFFF
  000000CF  41				inc		ecx
  000000D0  46				inc		esi
 
  000000D1				anymoreDigit:
- 000000D1  3B C8			cmp		ecx,eax
+ 000000D1  3B C8			cmp		ecx,eax		;if ecx==eax then we are right at the end of the string
  000000D3  74 2D			je		ifNeg
  000000D5  8A 1E			mov		bl,BYTE PTR [esi]
  000000D7  80 FB 2E			cmp		bl,'.'
- 000000DA  74 1B			je		point
- 000000DC  83 E3 0F			and		ebx,0000000fh
- 000000DF  89 5D F0			mov		DWORD PTR [ebp-16],ebx
+ 000000DA  74 1B			je		point			; if this character is point, then point=true
+ 000000DC  83 E3 0F			and		ebx,0000000fh	; otherwise convert it into decimal value
+ 000000DF  89 5D F0			mov		DWORD PTR [ebp-16],ebx	; value=ST(0)*10+value
  000000E2  DA 4D FC			fimul	DWORD PTR [ebp-4]
  000000E5  DA 45 F0			fiadd	DWORD PTR [ebp-16]
 
- 000000E8				checkPoint:
- 000000E8  83 7D F8 FF			cmp		DWORD PTR [ebp-8],-1
- 000000EC  75 10			jne		nextDigit
+ 000000E8				checkPoint:							;if we already went through point
+ 000000E8  83 7D F8 FF			cmp		DWORD PTR [ebp-8],-1		;ST(1) should multiply by 10 everytime when
+ 000000EC  75 10			jne		nextDigit					;it is going through a digit
  000000EE  D9 C9			fxch	
  000000F0  DA 4D FC			fimul	DWORD PTR [ebp-4]
  000000F3  D9 C9			fxch
  000000F5  EB 07			jmp		nextDigit
 
  000000F7				point:
- 000000F7  C7 45 F8			mov		DWORD PTR [ebp-8],-1
+ 000000F7  C7 45 F8			mov		DWORD PTR [ebp-8],-1	;set point=true
 	   FFFFFFFF
 
  000000FE				nextDigit:
@@ -188,11 +188,11 @@ example.asm						     Page 1 - 1
  00000100  EB CF			jmp		anymoreDigit
 					
  00000102				ifNeg:
- 00000102  83 7D F4 FF			cmp		DWORD PTR [ebp-12],-1
+ 00000102  83 7D F4 FF			cmp		DWORD PTR [ebp-12],-1	;if sign==true, then make it to be negative
  00000106  75 02			jne		noMoreDigit
  00000108  D9 E0			fchs
  0000010A				noMoreDigit:
- 0000010A  DE F1			fdivr
+ 0000010A  DE F1			fdivr				;finally ST(0)/=ST(1)
  0000010C  5E				pop		esi
  0000010D  59				pop		ecx
  0000010E  5B				pop		ebx
@@ -202,7 +202,7 @@ example.asm						     Page 1 - 1
  00000113  C3				ret
  00000114			atofProc	ENDP
 				END
-Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/04/20 01:18:10
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/04/20 13:15:14
 example.asm						     Symbols 2 - 1
 
 

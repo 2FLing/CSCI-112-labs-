@@ -1,0 +1,106 @@
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/07/20 00:24:36
+example.asm						     Page 1 - 1
+
+
+				;some SSE instructions
+				; Author:  MingkuanPang
+				; Date:    12/6/2020    
+
+				.mmx
+				.MODEL FLAT
+				INCLUDE io.h
+			      C ; IO.H -- header file for I/O macros (listing suppressed)
+			      C .NOLIST      ; turn off listing
+			      C .LIST        ; begin listing
+			      C 
+				.STACK  4096            ; reserve 4096-byte stack
+ 00000000			.DATA	; reserve storage for data
+ 00000000 40000000		a		REAL4	2.0
+ 00000004 BF800000		b		REAL4	-1.0
+				c		REAL4	-15.0
+example.asm(12) : error A2008:syntax error : c
+ 00000008 00000000		discr	REAL4	?
+ 0000000C 40800000		four	REAL4	4.0
+ 00000000			.CODE       
+ 00000000			_MainProc    PROC
+					movss	xmm0,b	;copy b
+example.asm(17) : error A2085:instruction or register not accepted in current CPU mode
+					mulss	xmm0,xmm0	;b*b
+example.asm(18) : error A2085:instruction or register not accepted in current CPU mode
+					movss	xmm1,a
+example.asm(19) : error A2085:instruction or register not accepted in current CPU mode
+					mulss	xmm1,four
+example.asm(20) : error A2085:instruction or register not accepted in current CPU mode
+					mulss	xmm1,c
+example.asm(21) : error A2085:instruction or register not accepted in current CPU mode
+					subss	xmm0,xmm1
+example.asm(22) : error A2085:instruction or register not accepted in current CPU mode
+					sqrtss	xmm0,xmm0
+example.asm(23) : error A2085:instruction or register not accepted in current CPU mode
+					movss	discr,xmm0
+example.asm(24) : error A2085:instruction or register not accepted in current CPU mode
+ 00000000  B8 00000000			mov			eax,0
+ 00000005  C3				ret
+ 00000006			_MainProc    ENDP
+				END
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/07/20 00:24:36
+example.asm						     Symbols 2 - 1
+
+
+
+
+Macros:
+
+                N a m e                 Type
+
+atod . . . . . . . . . . . . . .	Proc
+atow . . . . . . . . . . . . . .	Proc
+dtoa . . . . . . . . . . . . . .	Proc
+input  . . . . . . . . . . . . .	Proc
+output . . . . . . . . . . . . .	Proc
+wtoa . . . . . . . . . . . . . .	Proc
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000010 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 00000006 Para	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000006 Public
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000000h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+_getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
+_showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
+atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+a  . . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
+b  . . . . . . . . . . . . . . .	DWord	 00000004 _DATA	
+discr  . . . . . . . . . . . . .	DWord	 00000008 _DATA	
+dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+four . . . . . . . . . . . . . .	DWord	 0000000C _DATA	
+wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
+
+	   0 Warnings
+	   9 Errors
