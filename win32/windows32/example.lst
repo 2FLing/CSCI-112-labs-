@@ -1,49 +1,114 @@
-Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/07/20 00:24:36
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/08/20 13:03:47
 example.asm						     Page 1 - 1
 
 
-				;some SSE instructions
 				; Author:  MingkuanPang
-				; Date:    12/6/2020    
+				; Date:    10/8/2020    
 
-				.mmx
+				.586
 				.MODEL FLAT
-				INCLUDE io.h
+				 INCLUDE io.h
 			      C ; IO.H -- header file for I/O macros (listing suppressed)
 			      C .NOLIST      ; turn off listing
 			      C .LIST        ; begin listing
 			      C 
 				.STACK  4096            ; reserve 4096-byte stack
- 00000000			.DATA	; reserve storage for data
- 00000000 40000000		a		REAL4	2.0
- 00000004 BF800000		b		REAL4	-1.0
-				c		REAL4	-15.0
-example.asm(12) : error A2008:syntax error : c
- 00000008 00000000		discr	REAL4	?
- 0000000C 40800000		four	REAL4	4.0
+
+ 00000000			.DATA                   ; reserve storage for data
+ 00000000 48 6F 77 20 6D	prompt	BYTE	"How many disks?",0
+	   61 6E 79 20 64
+	   69 73 6B 73 3F
+	   00
+ 00000010  00000010 [		number	BYTE	16 DUP(?)
+	    00
+	   ]
+ 00000020 4D 6F 76 65 20	outLbl	BYTE	"Move disk",0
+	   64 69 73 6B 00
+ 0000002A 66 72 6F 6D 20	outMsg	BYTE	"from spindle "
+	   73 70 69 6E 64
+	   6C 65 20
+ 00000037 00 0A 0D		source	BYTE	?, 0ah,	0dh
+ 0000003A  74 6F 20 73 70			BYTE	'to spindle '
+	   69 6E 64 6C 65
+	   20
+ 00000045 00 00			dest	BYTE	?, 0
  00000000			.CODE       
  00000000			_MainProc    PROC
-					movss	xmm0,b	;copy b
-example.asm(17) : error A2085:instruction or register not accepted in current CPU mode
-					mulss	xmm0,xmm0	;b*b
-example.asm(18) : error A2085:instruction or register not accepted in current CPU mode
-					movss	xmm1,a
-example.asm(19) : error A2085:instruction or register not accepted in current CPU mode
-					mulss	xmm1,four
-example.asm(20) : error A2085:instruction or register not accepted in current CPU mode
-					mulss	xmm1,c
-example.asm(21) : error A2085:instruction or register not accepted in current CPU mode
-					subss	xmm0,xmm1
-example.asm(22) : error A2085:instruction or register not accepted in current CPU mode
-					sqrtss	xmm0,xmm0
-example.asm(23) : error A2085:instruction or register not accepted in current CPU mode
-					movss	discr,xmm0
-example.asm(24) : error A2085:instruction or register not accepted in current CPU mode
- 00000000  B8 00000000			mov			eax,0
- 00000005  C3				ret
- 00000006			_MainProc    ENDP
-				END
-Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/07/20 00:24:36
+ 00000000  B0 43			mov		al,'C'
+ 00000002  50				push	eax
+ 00000003  B0 42			mov		al,'B'
+ 00000005  50				push	eax
+ 00000006  B0 41			mov		al,'A'
+ 00000008  50				push	eax
+					input	prompt, number, 16
+					atod	number
+ 00000036  50				push	eax
+ 00000037  E8 00000009			call	move
+ 0000003C  83 C4 10			add		esp,16
+ 0000003F  B8 00000000			mov		eax,0
+ 00000044  C3				ret
+ 00000045			_MainProc    ENDP
+
+				;mov(num,'A','B','C')
+ 00000045			move   PROC
+ 00000045  55				push	ebp
+ 00000046  8B EC			mov		ebp,esp
+ 00000048  50				push	eax
+ 00000049  53				push	ebx
+ 0000004A  8B 45 08			mov		eax,[ebp+8]
+ 0000004D  83 F8 01			cmp		eax,1
+ 00000050  75 2D			jne		moreThanOne
+ 00000052  8B 5D 0C			mov		ebx,[ebp+12]
+ 00000055  88 1D 00000037 R		mov		source,bl
+ 0000005B  8B 5D 14			mov		ebx,[ebp+20]
+ 0000005E  88 1D 00000045 R		mov		dest,bl
+					output	outLbl,outMsg
+ 0000007D  EB 45			jmp		finishMoving
+
+ 0000007F				moreThanOne:
+					;mov	n-1 disks	from A to B move(n-1,A,C,B)
+ 0000007F  48				dec		eax
+ 00000080  8A 5D 10			mov		bl,[ebp+16]
+ 00000083  53				push	ebx
+ 00000084  8A 5D 14			mov		bl,[ebp+20]
+ 00000087  53				push	ebx
+ 00000088  8A 5D 0C			mov		bl,[ebp+12]
+ 0000008B  53				push	ebx
+ 0000008C  50				push	eax
+ 0000008D  E8 FFFFFFB3			call	move
+ 00000092  83 C4 10			add		esp,16
+
+					;mov	bottom disk	from A to C move(1,A,B,C)
+ 00000095  8A 5D 14			mov		bl,[ebp+20]
+ 00000098  53				push	ebx
+ 00000099  8A 5D 10			mov		bl,[ebp+16]
+ 0000009C  53				push	ebx
+ 0000009D  8A 5D 0C			mov		bl,[ebp+12]
+ 000000A0  53				push	ebx
+ 000000A1  BB 00000001			mov		ebx,1
+ 000000A6  53				push	ebx
+ 000000A7  E8 FFFFFF99			call	move
+ 000000AC  83 C4 10			add		esp,16
+
+					;mov	n-1 disk from B to C mov(n-1,B,A,C)
+ 000000AF  8A 5D 14			mov		bl,[ebp+20]
+ 000000B2  53				push	ebx
+ 000000B3  8A 5D 0C			mov		bl,[ebp+12]
+ 000000B6  53				push	ebx
+ 000000B7  8A 5D 10			mov		bl,[ebp+16]
+ 000000BA  53				push	ebx
+ 000000BB  50				push	eax
+ 000000BC  E8 FFFFFF84			call	move
+ 000000C1  83 C4 10			add		esp,16
+
+ 000000C4				finishMoving:
+ 000000C4  5B				pop		ebx
+ 000000C5  58				pop		eax
+ 000000C6  5D				pop		ebp
+ 000000C7  C3				ret
+ 000000C8			move   ENDP
+				END                           
+Microsoft (R) Macro Assembler Version 14.28.29333.0	    12/08/20 13:03:47
 example.asm						     Symbols 2 - 1
 
 
@@ -67,15 +132,18 @@ Segments and Groups:
 
 FLAT . . . . . . . . . . . . . .	GROUP
 STACK  . . . . . . . . . . . . .	32 Bit	 00001000 Para	  Stack	  'STACK'	 
-_DATA  . . . . . . . . . . . . .	32 Bit	 00000010 Para	  Public  'DATA'	
-_TEXT  . . . . . . . . . . . . .	32 Bit	 00000006 Para	  Public  'CODE'	
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000047 Para	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 000000C8 Para	  Public  'CODE'	
 
 
 Procedures, parameters, and locals:
 
                 N a m e                 Type     Value    Attr
 
-_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000006 Public
+_MainProc  . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000045 Public
+move . . . . . . . . . . . . . .	P Near	 00000045 _TEXT	Length= 00000083 Public
+  moreThanOne  . . . . . . . . .	L Near	 0000007F _TEXT	
+  finishMoving . . . . . . . . .	L Near	 000000C4 _TEXT	
 
 
 Symbols:
@@ -95,12 +163,14 @@ _getInput  . . . . . . . . . . .	L Near	 00000000 FLAT	External
 _showOutput  . . . . . . . . . .	L Near	 00000000 FLAT	External
 atodproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 atowproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-a  . . . . . . . . . . . . . . .	DWord	 00000000 _DATA	
-b  . . . . . . . . . . . . . . .	DWord	 00000004 _DATA	
-discr  . . . . . . . . . . . . .	DWord	 00000008 _DATA	
+dest . . . . . . . . . . . . . .	Byte	 00000045 _DATA	
 dtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
-four . . . . . . . . . . . . . .	DWord	 0000000C _DATA	
+number . . . . . . . . . . . . .	Byte	 00000010 _DATA	
+outLbl . . . . . . . . . . . . .	Byte	 00000020 _DATA	
+outMsg . . . . . . . . . . . . .	Byte	 0000002A _DATA	
+prompt . . . . . . . . . . . . .	Byte	 00000000 _DATA	
+source . . . . . . . . . . . . .	Byte	 00000037 _DATA	
 wtoaproc . . . . . . . . . . . .	L Near	 00000000 FLAT	External
 
 	   0 Warnings
-	   9 Errors
+	   0 Errors

@@ -1,3 +1,3 @@
 ﻿  Assembling example.asm...
-example.asm(67): error A2070: invalid instruction operands
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\MSBuild\Microsoft\VC\v160\BuildCustomizations\masm.targets(70,5): error MSB3721: The command "ml.exe /c /nologo /Zi /Fo"Debug\example.obj" /W3 /errorReport:prompt /Fl /Taexample.asm" exited with code 1.
+example.asm(28): error A2006: undefined symbol : move
+C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\BuildCustomizations\masm.targets(70,5): error MSB3721: 命令“ml.exe /c /nologo /Zi /Fo"Debug\example.obj" /W3 /errorReport:prompt /Fl /Taexample.asm”已退出，返回代码为 1。

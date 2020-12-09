@@ -1,11 +1,2 @@
 ﻿  Assembling example.asm...
-example.asm(12): error A2008: syntax error : c
-example.asm(17): error A2085: instruction or register not accepted in current CPU mode
-example.asm(18): error A2085: instruction or register not accepted in current CPU mode
-example.asm(19): error A2085: instruction or register not accepted in current CPU mode
-example.asm(20): error A2085: instruction or register not accepted in current CPU mode
-example.asm(21): error A2085: instruction or register not accepted in current CPU mode
-example.asm(22): error A2085: instruction or register not accepted in current CPU mode
-example.asm(23): error A2085: instruction or register not accepted in current CPU mode
-example.asm(24): error A2085: instruction or register not accepted in current CPU mode
-C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\BuildCustomizations\masm.targets(70,5): error MSB3721: 命令“ml.exe /c /nologo /Zi /Fo"Debug\example.obj" /W3 /errorReport:prompt /Fl /Taexample.asm”已退出，返回代码为 1。
+  windows32.vcxproj -> C:\Users\34933\Desktop\CSCI-112-labs-\win32\Debug\windows32.exe

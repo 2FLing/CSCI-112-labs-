@@ -1,6 +1,6 @@
  windows32
 
- Timestamp is 5fcd9db8 (Sun Dec  6 19:12:56 2020)
+ Timestamp is 5fcd9df0 (Sun Dec  6 19:13:52 2020)
 
  Preferred load address is 00400000
 
@@ -43,29 +43,29 @@
 
   Address         Publics by Value              Rva+Base       Lib:Object
 
- 0000:00000000       ___guard_fids_count        00000000     <absolute>
- 0000:00000000       ___guard_eh_cont_table     00000000     <absolute>
- 0000:00000000       ___arm64x_extra_rfe_table_size 00000000     <absolute>
- 0000:00000000       ___arm64x_redirection_metadata 00000000     <absolute>
- 0000:00000000       ___hybrid_code_map         00000000     <absolute>
+ 0000:00000000       ___guard_longjmp_count     00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
+ 0000:00000000       ___arm64x_native_entrypoint 00000000     <absolute>
  0000:00000000       ___guard_eh_cont_count     00000000     <absolute>
+ 0000:00000000       ___guard_fids_count        00000000     <absolute>
+ 0000:00000000       ___arm64x_redirection_metadata_count 00000000     <absolute>
+ 0000:00000000       ___arm64x_extra_rfe_table_size 00000000     <absolute>
+ 0000:00000000       ___hybrid_code_map         00000000     <absolute>
+ 0000:00000000       ___x64_code_ranges_to_entry_points 00000000     <absolute>
+ 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
  0000:00000000       ___hybrid_auxiliary_iat    00000000     <absolute>
+ 0000:00000000       ___guard_iat_table         00000000     <absolute>
+ 0000:00000000       ___hybrid_code_map_count   00000000     <absolute>
+ 0000:00000000       ___dynamic_value_reloc_table 00000000     <absolute>
+ 0000:00000000       ___guard_eh_cont_table     00000000     <absolute>
+ 0000:00000000       ___arm64x_redirection_metadata 00000000     <absolute>
+ 0000:00000000       ___x64_code_ranges_to_entry_points_count 00000000     <absolute>
  0000:00000000       ___arm64x_extra_rfe_table  00000000     <absolute>
  0000:00000000       ___volatile_metadata       00000000     <absolute>
- 0000:00000000       ___hybrid_code_map_count   00000000     <absolute>
- 0000:00000000       ___guard_iat_count         00000000     <absolute>
- 0000:00000000       ___dynamic_value_reloc_table 00000000     <absolute>
- 0000:00000000       ___x64_code_ranges_to_entry_points_count 00000000     <absolute>
- 0000:00000000       ___safe_se_handler_table   00000000     <absolute>
- 0000:00000000       ___guard_longjmp_table     00000000     <absolute>
- 0000:00000000       ___safe_se_handler_count   00000000     <absolute>
- 0000:00000000       ___arm64x_native_entrypoint 00000000     <absolute>
- 0000:00000000       ___arm64x_redirection_metadata_count 00000000     <absolute>
- 0000:00000000       ___guard_iat_table         00000000     <absolute>
  0000:00000000       ___guard_fids_table        00000000     <absolute>
- 0000:00000000       ___guard_longjmp_count     00000000     <absolute>
+ 0000:00000000       ___guard_longjmp_table     00000000     <absolute>
  0000:00000000       ___enclave_config          00000000     <absolute>
- 0000:00000000       ___x64_code_ranges_to_entry_points 00000000     <absolute>
+ 0000:00000000       ___guard_iat_count         00000000     <absolute>
  0000:00000000       ___AbsoluteZero            00000000     <absolute>
  0000:00000100       ___guard_flags             00000100     <absolute>
  0000:00000000       ___ImageBase               00400000     <linker-defined>
@@ -160,8 +160,8 @@
  0002:00002fd0       ___scrt_initialize_winrt   00413fd0 f   MSVCRTD:utility_desktop.obj
  0002:00002fe0       ___scrt_is_managed_app     00413fe0 f   MSVCRTD:utility_desktop.obj
  0002:00003090       ___scrt_set_unhandled_exception_filter 00414090 f   MSVCRTD:utility_desktop.obj
- 0002:000030b0       ___scrt_stub_for_initialize_mta 004140b0 f   MSVCRTD:utility_desktop.obj
  0002:000030b0       ___scrt_exe_initialize_mta 004140b0 f   MSVCRTD:utility_desktop.obj
+ 0002:000030b0       ___scrt_stub_for_initialize_mta 004140b0 f   MSVCRTD:utility_desktop.obj
  0002:000030c0       ___scrt_unhandled_exception_filter@4 004140c0 f   MSVCRTD:utility_desktop.obj
  0002:00003160       __crt_debugger_hook        00414160 f   MSVCRTD:utility_desktop.obj
  0002:00003180       __RTC_Initialize           00414180 f   MSVCRTD:initsect.obj
@@ -249,28 +249,27 @@
  0002:00004571       _VirtualQuery@12           00415571 f   kernel32:KERNEL32.dll
  0002:00004577       _FreeLibrary@4             00415577 f   kernel32:KERNEL32.dll
  0002:0000457d       _GetProcAddress@8          0041557d f   kernel32:KERNEL32.dll
- 0002:00004590       ___scrt_stub_for_acrt_initialize 00415590 f   MSVCRTD:ucrt_stubs.obj
  0002:00004590       ___acrt_initialize         00415590 f   MSVCRTD:ucrt_stubs.obj
  0002:00004590       ___vcrt_initialize         00415590 f   MSVCRTD:ucrt_stubs.obj
+ 0002:00004590       ___scrt_stub_for_acrt_initialize 00415590 f   MSVCRTD:ucrt_stubs.obj
  0002:000045a0       ___acrt_thread_attach      004155a0 f   MSVCRTD:ucrt_stubs.obj
- 0002:000045a0       ___vcrt_thread_attach      004155a0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045a0       ___scrt_stub_for_acrt_thread_attach 004155a0 f   MSVCRTD:ucrt_stubs.obj
- 0002:000045b0       ___scrt_stub_for_acrt_thread_detach 004155b0 f   MSVCRTD:ucrt_stubs.obj
+ 0002:000045a0       ___vcrt_thread_attach      004155a0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045b0       ___acrt_thread_detach      004155b0 f   MSVCRTD:ucrt_stubs.obj
+ 0002:000045b0       ___scrt_stub_for_acrt_thread_detach 004155b0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045b0       ___vcrt_thread_detach      004155b0 f   MSVCRTD:ucrt_stubs.obj
- 0002:000045c0       ___acrt_uninitialize       004155c0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045c0       ___scrt_stub_for_acrt_uninitialize 004155c0 f   MSVCRTD:ucrt_stubs.obj
+ 0002:000045c0       ___acrt_uninitialize       004155c0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045c0       ___vcrt_uninitialize       004155c0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045d0       ___scrt_stub_for_acrt_uninitialize_critical 004155d0 f   MSVCRTD:ucrt_stubs.obj
- 0002:000045d0       ___vcrt_uninitialize_critical 004155d0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045d0       ___acrt_uninitialize_critical 004155d0 f   MSVCRTD:ucrt_stubs.obj
+ 0002:000045d0       ___vcrt_uninitialize_critical 004155d0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045e0       __is_c_termination_complete 004155e0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045e0       ___scrt_stub_for_is_c_termination_complete 004155e0 f   MSVCRTD:ucrt_stubs.obj
  0002:000045f0       __filter_x86_sse2_floating_point_exception_default 004155f0 f   MSVCRTD:x86_exception_filter.obj
  0002:000045f0       __filter_x86_sse2_floating_point_exception 004155f0 f   MSVCRTD:x86_exception_filter.obj
  0002:00004730       _MainProc                  00415730 f   example.obj
- 0002:000047f2       ftoaProc                   004157f2 f   example.obj
- 0002:000048f8       atofProc                   004158f8 f   example.obj
+ 0002:00004775       move                       00415775 f   example.obj
  0003:00000000       ___xc_a                    00417000     MSVCRTD:initializers.obj
  0003:00000208       ___xc_z                    00417208     MSVCRTD:initializers.obj
  0003:0000030c       ___xi_a                    0041730c     MSVCRTD:initializers.obj
@@ -559,19 +558,12 @@
  0003:00002128       __sehtable$?__scrt_common_main_seh@@YAHXZ 00419128     MSVCRTD:exe_winmain.obj
  0003:00002148       __sehtable$?notify_debugger@@YAXABUtagEXCEPTION_VISUALCPP_DEBUG_INFO@@@Z 00419148     MSVCRTD:error.obj
  0003:00002168       __sehtable$___scrt_is_nonwritable_in_current_image 00419168     MSVCRTD:utility.obj
- 0004:000000e0       string                     0041a0e0     example.obj
- 0004:00000130       one                        0041a130     example.obj
- 0004:00000134       round                      0041a134     example.obj
- 0004:00000138       ten                        0041a138     example.obj
- 0004:0000013c       x                          0041a13c     example.obj
- 0004:00000140       two                        0041a140     example.obj
- 0004:00000144       three                      0041a144     example.obj
- 0004:00000148       root                       0041a148     example.obj
- 0004:0000014c       oldRoot                    0041a14c     example.obj
- 0004:00000150       smallValue                 0041a150     example.obj
- 0004:00000154       digit                      0041a154     example.obj
- 0004:00000158       inPrompt                   0041a158     example.obj
- 0004:00000170       resLbl                     0041a170     example.obj
+ 0004:000000e0       prompt                     0041a0e0     example.obj
+ 0004:000000f0       number                     0041a0f0     example.obj
+ 0004:00000100       outLbl                     0041a100     example.obj
+ 0004:0000010a       outMsg                     0041a10a     example.obj
+ 0004:00000117       source                     0041a117     example.obj
+ 0004:00000125       dest                       0041a125     example.obj
  0004:000001e0       _buf                       0041a1e0     framework.obj
  0004:000002e0       _inputLabel                0041a2e0     framework.obj
  0004:00000448       _GS_ExceptionRecord        0041a448     MSVCRTD:gs_report.obj
